@@ -61,7 +61,7 @@ export default function LeftSideBar() {
           </Link>
 
           <Link
-            to={""}
+            to={"/login"}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
           >
             <LogIn />
