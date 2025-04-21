@@ -1,8 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import LeftSideBar from "./components/LeftSideBar";
+import { useDispatch } from "react-redux";
+import { isCheckAuth } from "./redux/slice/authSlice";
 
 export default function App() {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(isCheckAuth())
+  },[dispatch])
   return (
     <div className="flex min-h-screen">
       <LeftSideBar />
