@@ -1,17 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { login } from '../redux/slice/authSlice';
+import toast from 'react-hot-toast';
+import { useLogin } from '../api/authApi';
 
-const loginUser = async (formData) => {
-  const response = await axios.post("http://localhost:5000/api/auth/login", formData, {
-    withCredentials: true
-  })
-  return response.data;
-}
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -21,17 +15,7 @@ export default function Login() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { mutate } = useMutation({
-    mutationFn: loginUser,
-    onSuccess: (data) => {
-      console.log(data);
-      dispatch(login(data))
-      navigate("/")
-    },
-    onError: (error) => {
-      console.error(error);
-    }
-  })
+  const loginMutation = useLogin()
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -44,8 +28,20 @@ export default function Login() {
       email,
       password
     }
-    mutate(formData)
+    
+    loginMutation.mutate(formData)
   }
+
+  useEffect(() => {
+    if (loginMutation.isSuccess) {
+      toast.success(loginMutation.data.message)
+      dispatch(login(loginMutation.data.data))
+      navigate("/")
+    }
+    if (loginMutation.isError) {
+      toast.error(loginMutation.error.response?.data?.message || loginMutation.error.message)
+    }
+  })
   return (
     <main className="flex justify-center items-center min-h-screen">
       <div className="w-96 p-6 border border-gray-700 rounded-xl shadow-2xl">

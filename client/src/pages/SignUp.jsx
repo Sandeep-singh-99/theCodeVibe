@@ -1,17 +1,10 @@
 import { Camera, Eye, EyeOff, Lock, Mail, User } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/slice/authSlice";
-
-const signUpUser = async (formData) => {
-  const response = await axios.post("http://localhost:5000/api/auth/signup", {formData}, {
-    withCredentials: true
-  })
-  return response.data;
-}
+import toast from "react-hot-toast";
+import { useSignUp } from "../api/authApi";
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -24,17 +17,7 @@ export default function SignUp() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const { mutate } = useMutation({
-    mutationFn: signUpUser,
-    onSuccess: (data) => {
-      console.log(data);
-      dispatch(login(data))
-      navigate("/")
-    },
-    onError: (error) => {
-      console.error(error);
-    }
-  })
+  const signUpMutation = useSignUp()
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -59,8 +42,19 @@ export default function SignUp() {
       formData.append("image", profileImage);
     }
 
-    mutate(formData);
+    signUpMutation.mutate(formData)
   };
+
+  useEffect(() => {
+    if (signUpMutation.isSuccess) {
+      toast.success(signUpMutation.data.message)
+      dispatch(login(signUpMutation.data.data))
+      navigate("/")
+    }
+    if (signUpMutation.isError) {
+      toast.error(signUpMutation.error.response?.data?.message || signUpMutation.error.message)
+    }
+  }, [signUpMutation.isSuccess, signUpMutation.isError, dispatch, navigate])
 
   return (
     <main className="flex justify-center items-center min-h-screen">

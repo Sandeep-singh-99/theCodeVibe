@@ -1,12 +1,10 @@
 import React, { use } from "react";
-import { Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, TrendingUp, UserCircle } from "lucide-react";
+import { Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, Settings, TrendingUp, UserCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 export default function LeftSideBar() {
-  const { isAuthenticated, user, loading } = useSelector((state) => state.auth)
-
-  const dispatch = useDispatch()
+  const { isAuthenticated, user } = useSelector((state) => state.auth)
 
 
   return (
@@ -59,6 +57,14 @@ export default function LeftSideBar() {
           </Link>
 
           <Link
+            to={"/setting"}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
+          >
+            <Settings/>
+            <span className="hidden lg:inline ml-4 text-xl">Settings</span>
+          </Link>
+
+          <Link
             to={""}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
           >
@@ -70,11 +76,11 @@ export default function LeftSideBar() {
             isAuthenticated ? (
               <div className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12">
                 <img
-                src={user.data.profilePic}
+                src={user?.profilePic}
                 alt="Profile"
                 className="w-10 h-10 rounded-full border-2 border-white cursor-pointer hover:border-gray-300 transition-colors"
                 />
-                <h1 className="ml-2 text-xl">{user.data.username}</h1>
+                <h1 className="ml-2 text-xl hidden md:block">{user?.username}</h1>
               </div>
             ) : (
               <Link
