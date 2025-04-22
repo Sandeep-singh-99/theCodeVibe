@@ -4,6 +4,7 @@ import App from "../App";
 import SignUp from "../pages/SignUp";
 import Login from "../pages/Login";
 import Setting from "../pages/Setting";
+import EditProfile from "../pages/EditProfile";
 
 const routers = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ const routers = createBrowserRouter([
             {
                 path: "setting",
                 element: <Setting/>
+            },
+            {
+                path: "edit-profile",
+                element: <EditProfile/>
             }
         ]
     }
