@@ -1,11 +1,13 @@
-import React, { use } from "react";
-import { Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, Settings, TrendingUp, UserCircle } from "lucide-react";
+import React, {  useState } from "react";
+import {  Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, PodcastIcon, Settings, SquarePen, TrendingUp, UserCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
+import PostModalComponent from "./PostModalComponent";
 
 export default function LeftSideBar() {
   const { isAuthenticated, user } = useSelector((state) => state.auth)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const naviagate = useNavigate()
 
@@ -68,6 +70,23 @@ export default function LeftSideBar() {
             <Settings/>
             <span className="hidden lg:inline ml-4 text-xl">Settings</span>
           </button>
+
+          {
+            isAuthenticated && (
+              <button
+              onClick={() => setIsModalOpen(true)}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
+          >
+            <SquarePen/>
+            <span className="hidden lg:inline ml-4 text-xl">Create</span>
+          </button>  
+            )
+          }
+
+          <PostModalComponent
+          onClose={() => setIsModalOpen(false)}
+          isOpen={isModalOpen}
+          />        
 
           <button onClick={() => handleNavClick("")}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"

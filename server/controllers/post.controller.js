@@ -11,10 +11,8 @@ export const createPost = async (req, res) => {
         const userId = req.user._id;
         const { content } = req.body;
 
-       
-        if (!content) {
-            return res.status(400).json({ error: "Post content is required" });
-        }
+        console.log("req.body:", req.body);
+        console.log("req.files:", req.files);
 
        
         const images = [];
@@ -27,14 +25,10 @@ export const createPost = async (req, res) => {
             const imageFiles = req.files['images'];
             
             for (const file of imageFiles) {
-                if (!['image/jpeg', 'image/png'].includes(file.mimetype)) {
-                    return res.status(400).json({ error: "Only JPEG and PNG allowed for images" });
-                }
-                
                 const uploadResponse = await imageKit.upload({
                     file: file.buffer,
                     fileName: file.originalname,
-                    folder: '/social-media-app/images'
+                    folder: "/Social-media-app/images",
                 });
                 
                 images.push(uploadResponse.url);
@@ -47,14 +41,10 @@ export const createPost = async (req, res) => {
             const videoFiles = req.files['videos'];
             
             for (const file of videoFiles) {
-                if (!['video/mp4'].includes(file.mimetype)) {
-                    return res.status(400).json({ error: "Only MP4 allowed for videos" });
-                }
-                
                 const uploadResponse = await imageKit.upload({
                     file: file.buffer,
                     fileName: file.originalname,
-                    folder: '/social-media-app/videos'
+                    folder: "/Social-media-app/videos",
                 });
                 
                 videos.push(uploadResponse.url);
@@ -65,7 +55,7 @@ export const createPost = async (req, res) => {
         const newPost = await Post.create({
             content,
             userId,
-            image: images,          
+            imagePic: images,          
             imageKitFileId: imageKitFileIds, 
             videos: videos,         
             videoKitFileId: videoKitFileIds  

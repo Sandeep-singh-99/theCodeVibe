@@ -7,27 +7,26 @@ const postSchema = new Schema({
         required: true,
     },
 
-    contentText: {
+    content: {
         type: String,
-        required: true,
         trim: true,
     },
 
-    imagePic: {
+    imagePic: [{
         type: String,
-    },
+    }],
 
-    imageKItFileId: {
+    imageKitFileId: [{
         type: String,
-    },
+    }],
 
-    videos: {
+    videos: [{
         type: String,
-    },
+    }],
 
-    videoKItFileId: {
+    videoKitFileId: [{
         type: String,
-    },
+    }],
 },{timestamps: true});
 
 const Post = model("Post", postSchema);
