@@ -1,11 +1,21 @@
 import React, { use } from "react";
 import { Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, Settings, TrendingUp, UserCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-hot-toast";
 
 export default function LeftSideBar() {
   const { isAuthenticated, user } = useSelector((state) => state.auth)
 
+  const naviagate = useNavigate()
+
+  const handleNavClick = (path) => {
+    if (!isAuthenticated) {
+      toast.error("Please login to access this feature");
+    } else {
+      naviagate(path)
+    }
+  }
 
   return (
     <div className="fixed top-0 lg:left-5 left-0 h-screen w-23 lg:w-64 flex flex-col justify-between lg:items-stretch items-center border-r border-gray-700">
@@ -24,53 +34,47 @@ export default function LeftSideBar() {
             <span className="hidden lg:inline ml-4 text-xl">Home</span>
           </Link>
 
-          <Link
-            to={""}
-            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
+          <button onClick={() => handleNavClick("")}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <TrendingUp />
             <span className="hidden lg:inline ml-4 text-xl">Trending</span>
-          </Link>
+          </button>
 
-          <Link
-            to={""}
-            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
+          <button onClick={() => handleNavClick("")}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <Bell/>
             <span className="hidden lg:inline ml-4 text-xl">Notification</span>
-          </Link>
+          </button>
 
-          <Link
-            to={""}
-            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
+          <button onClick={() => handleNavClick("")}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <MessageCircleCode />
             <span className="hidden lg:inline ml-4 text-xl">Message</span>
-          </Link>
+          </button>
 
-          <Link
-            to={""}
-            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
+          <button onClick={() => handleNavClick("")}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <BookMarkedIcon/>
             <span className="hidden lg:inline ml-4 text-xl">BookMark</span>
-          </Link>
+          </button>
 
-          <Link
-            to={"/setting"}
-            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
+          <button onClick={() => handleNavClick("/setting")}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <Settings/>
             <span className="hidden lg:inline ml-4 text-xl">Settings</span>
-          </Link>
+          </button>
 
-          <Link
-            to={""}
-            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
+          <button onClick={() => handleNavClick("")}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <UserCircle/>
             <span className="hidden lg:inline ml-4 text-xl">Profile</span>
-          </Link>
+          </button>
 
           {
             isAuthenticated ? (
