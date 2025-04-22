@@ -1,7 +1,7 @@
 import React, { use } from "react";
 import { Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, Settings, TrendingUp, UserCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
 
 export default function LeftSideBar() {

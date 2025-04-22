@@ -34,7 +34,7 @@ const userSchema = new Schema({
         type: String,
         default: "",
     }
-})
+},{timestamps: true});
 
 userSchema.pre("save", function (next) {
     if (this.isModified("password")) {
