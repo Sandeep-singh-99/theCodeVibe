@@ -3,23 +3,10 @@ import { useSelector } from "react-redux";
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 
 export default function PostCardComponents() {
-  const { posts, isLoading, isError } = useSelector(
-    (state) => state.posts || { posts: [], isLoading: false, isError: false }
+  const { posts } = useSelector(
+    (state) => state.posts
   );
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-32">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
-      </div>
-    );
-  }
-
-  // Handle error state
-  if (isError) {
-    return <div className="text-error text-center">Error loading posts</div>;
-  }
-
+  
   // Handle empty posts
   if (!posts || posts.length === 0) {
     return (
@@ -32,7 +19,7 @@ export default function PostCardComponents() {
       {posts.map((post) => (
         <div
           key={post._id}
-          className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-200/30 rounded-2xl overflow-hidden"
+          className="card bg-black shadow-xl hover:shadow-2xl hover:glass transition-all duration-300 border border-base-200/90 rounded-2xl overflow-hidden"
         >
           <div className="card-body p-6">
             {/* User Info */}
@@ -59,7 +46,7 @@ export default function PostCardComponents() {
             {/* Media: Images and Videos */}
             {(post.imagePic.length > 0 || post.videos.length > 0) && (
               <div className="mb-6">
-                <div className="carousel rounded-xl w-full h-[450px] bg-base-200/30 relative overflow-hidden">
+                <div className="carousel rounded-xl w-full h-[450px] relative overflow-hidden">
                   {[...post.imagePic, ...post.videos].map((media, index) => (
                     <div
                       key={`${post._id}-media-${index}`}
@@ -95,14 +82,14 @@ export default function PostCardComponents() {
 
             {/* Content */}
             {post.content && (
-              <p className="text-base-content/90 text-base leading-relaxed mb-6 font-light tracking-wide">
+              <p className="text-base-content/100 text-base font-serif leading-relaxed mb-6 font-light tracking-wide">
                 {post.content}
               </p>
             )}
 
             {/* Interaction Buttons */}
             <div className="flex gap-4">
-              <button className="btn btn-ghost btn-circle text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-200">
+              <button className="btn btn-ghost  text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-200">
                 <Heart className="w-5 h-5" />
                 <span className="ml-1 text-sm">24</span>
               </button>

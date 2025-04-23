@@ -1,15 +1,16 @@
-import { ImageMinus, VideoOff, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom"; 
+import { ImageMinus, VideoOff, X } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useCreatePost } from "../api/postApi";
 
-export default function PostModalComponents({ isOpen, onClose }) {
+export default function PostModalComponent({ isOpen, onClose }) {
   const [postContent, setPostContent] = useState("");
   const [mediaFile, setMediaFile] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [postData, setPostData] = useState(null);
   const maxLength = 280;
-  const maxFileSize = 50 * 1024 * 1024; 
+  const maxFileSize = 50 * 1024 * 1024;
 
   const { user } = useSelector((state) => state.auth);
   const {
@@ -20,7 +21,6 @@ export default function PostModalComponents({ isOpen, onClose }) {
     isSuccess,
   } = useCreatePost();
 
-  // Handle posting logic
   const handlePost = () => {
     if (!postContent.trim() && !mediaFile) {
       alert("Please provide content or select an image/video.");
@@ -56,7 +56,6 @@ export default function PostModalComponents({ isOpen, onClose }) {
     });
   };
 
-  // Handle media file selection
   const handleMediaChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -74,14 +73,12 @@ export default function PostModalComponents({ isOpen, onClose }) {
     }
   };
 
-  // Handle overlay click to close modal
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  // Cleanup on modal close
   useEffect(() => {
     if (!isOpen) {
       setPostContent("");
@@ -96,15 +93,15 @@ export default function PostModalComponents({ isOpen, onClose }) {
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <dialog
       id="post_modal"
-      className="modal fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center"
+      className="modal fixed inset-0 z-[1000 flex items-center justify-center bg-black bg-opacity-50"
       open={isOpen}
       onClick={handleOverlayClick}
       aria-labelledby="post_modal_title"
     >
-      <div className="modal-box shadow-2xl shadow-white/10 text-white w-full max-w-lg rounded-lg">
+      <div className="modal-box bg-black shadow-2xl/100 shadow-gray-400 text-white w-full max-w-lg rounded-lg">
         <div className="flex items-center">
           <button
             onClick={onClose}
@@ -202,7 +199,7 @@ export default function PostModalComponents({ isOpen, onClose }) {
 
         <div className="flex justify-between items-center mt-4 border-t border-gray-700 pt-2">
           <div className="flex space-x-3">
-            <label className="cursor-pointer text-blue-500">
+            <label className="cursor-pointer text-white">
               <input
                 type="file"
                 accept="image/jpeg,image/png"
@@ -212,7 +209,7 @@ export default function PostModalComponents({ isOpen, onClose }) {
               />
               <ImageMinus />
             </label>
-            <label className="cursor-pointer text-blue-500">
+            <label className="cursor-pointer text-white">
               <input
                 type="file"
                 accept="video/mp4"
@@ -237,6 +234,7 @@ export default function PostModalComponents({ isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </dialog>
+    </dialog>,
+    document.body 
   );
 }
