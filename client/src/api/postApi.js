@@ -1,5 +1,7 @@
 import axios from "axios";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useInfiniteQuery } from "@tanstack/react-query";
+import { useDispatch } from "react-redux";
+import { setLoading, setPosts, setError } from "../redux/slice/postSlice";
 
 // Base API URL
 const API_URL = "http://localhost:5000/api/post";
@@ -21,20 +23,39 @@ export const useCreatePost = () => {
     })
 }
 
+
 export const useGetAllPost = () => {
-    return useQuery({
-        queryKey: ["get-all-post"],
-        queryFn: async () => {
-            const response = await axios.get(`${API_URL}/get-all-post`, {
-                withCredentials: true,
-            })
-            return response.data;
-        },
-        onError: (error) => {
-            console.error(
-                "Get all post failed:",
-                error.response?.data?.message || error.message
-            );
-        },
-    })       
-}
+    const dispatch = useDispatch();
+  
+    return useInfiniteQuery({
+      queryKey: ["get-all-post"],
+      queryFn: async ({ pageParam = 1 }) => {
+        dispatch(setLoading(true));
+        const response = await axios.get(`${API_URL}/get-all-post`, {
+          params: {
+            page: pageParam,
+            limit: 10, 
+          },
+          withCredentials: true,
+        });
+        dispatch(setLoading(false));
+        return response.data.data; 
+      },
+      getNextPageParam: (lastPage) => {
+        const hasMore = lastPage.posts.length === 10 && lastPage.page * lastPage.limit < lastPage.total;
+        return hasMore ? lastPage.page + 1 : undefined;
+      },
+      onSuccess: (data) => {
+        const allPosts = data.pages.flatMap((page) => page.posts);
+        dispatch(setPosts(allPosts));
+      },
+      onError: (error) => {
+        dispatch(setLoading(false));
+        dispatch(setError(true));
+        console.error(
+          "Get all post failed:",
+          error.response?.data?.message || error.message
+        );
+      },
+    });
+  };

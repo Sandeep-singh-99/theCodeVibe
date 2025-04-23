@@ -69,10 +69,30 @@ export const createPost = async (req, res) => {
 
 export const getAllPost = async (req, res) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 }).populate("userId", "username profilePic email")
-
-        res.status(200).json({ data: posts, message: "Posts fetched successfully" });
+      const page = parseInt(req.query.page) || 1; 
+      const limit = parseInt(req.query.limit) || 10; 
+      const skip = (page - 1) * limit; 
+  
+   
+      const posts = await Post.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate("userId", "username profilePic email");
+  
+      
+      const total = await Post.countDocuments();
+  
+      res.status(200).json({
+        data: {
+          posts,
+          page,
+          limit,
+          total,
+        },
+        message: "Posts fetched successfully",
+      });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+      res.status(500).json({ error: error.message });
     }
-}
+  };

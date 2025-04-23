@@ -3,10 +3,8 @@ import { useSelector } from "react-redux";
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 
 export default function PostCardComponents() {
-  const { posts } = useSelector(
-    (state) => state.posts
-  );
-  
+  const { posts } = useSelector((state) => state.posts);
+
   // Handle empty posts
   if (!posts || posts.length === 0) {
     return (
@@ -67,11 +65,9 @@ export default function PostCardComponents() {
                           className="w-full h-[450px] object-contain rounded-xl transition-transform duration-300 hover:scale-[1.02]"
                         />
                       )}
-                      {/* Media counter */}
                       {[...post.imagePic, ...post.videos].length > 1 && (
                         <div className="absolute top-3 right-3 badge badge-neutral badge-sm font-medium">
-                          {index + 1}/
-                          {[...post.imagePic, ...post.videos].length}
+                          {index + 1}/{[...post.imagePic, ...post.videos].length}
                         </div>
                       )}
                     </div>
@@ -89,7 +85,7 @@ export default function PostCardComponents() {
 
             {/* Interaction Buttons */}
             <div className="flex gap-4">
-              <button className="btn btn-ghost  text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-200">
+              <button className="btn btn-ghost text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-200">
                 <Heart className="w-5 h-5" />
                 <span className="ml-1 text-sm">24</span>
               </button>
