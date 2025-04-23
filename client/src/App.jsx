@@ -5,23 +5,34 @@ import { useDispatch } from "react-redux";
 import { checkAuth, setError } from "./redux/slice/authSlice";
 import toast, { Toaster } from "react-hot-toast";
 import { useCheckAuth } from "./api/authApi";
+import { useGetAllPost } from "./api/postApi";
+import { setPosts } from "./redux/slice/postSlice";
 
 export default function App() {
   const dispatch = useDispatch()
 
-  const { data: authData, error } = useCheckAuth()
+  const { data: authData, error: authError } = useCheckAuth();
+  const { data: postData, error: postError } = useGetAllPost();
 
   useEffect(() => {
     if (authData) {
       dispatch(checkAuth(authData.data));
-      console.log(authData);
-      
       toast.success('Authenticated successfully', { id: 'auth-success' });
     }
-    if (error) {
-      dispatch(setError(error.response?.data?.message || error.message));
+    if (authError) {
+      dispatch(setError(authError.response?.data?.message || authError.message));
     }
-  }, [authData, error, dispatch]);
+  }, [authData, authError, dispatch]);
+
+  useEffect(() => {
+    if (postData) {
+      dispatch(setPosts(postData.data)); 
+      console.log("post data", postData);
+    }
+    if (postError) {
+      dispatch(setError(postError.response?.data?.message || postError.message));
+    }
+  }, [postData, postError, dispatch]);
 
   return (
     <div className="flex min-h-screen">

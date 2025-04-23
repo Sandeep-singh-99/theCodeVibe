@@ -99,7 +99,7 @@ export default function PostModalComponents({ isOpen, onClose }) {
   return (
     <dialog
       id="post_modal"
-      className="modal modal-middle"
+      className="modal fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center"
       open={isOpen}
       onClick={handleOverlayClick}
       aria-labelledby="post_modal_title"

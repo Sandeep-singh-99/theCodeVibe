@@ -10,10 +10,6 @@ export const createPost = async (req, res) => {
         
         const userId = req.user._id;
         const { content } = req.body;
-
-        console.log("req.body:", req.body);
-        console.log("req.files:", req.files);
-
        
         const images = [];
         const imageKitFileIds = [];
@@ -73,7 +69,7 @@ export const createPost = async (req, res) => {
 
 export const getAllPost = async (req, res) => {
     try {
-        const posts = await Post.find().sort({ createdAt: -1 }).populate("userId", "fullName profileImage email").exec();
+        const posts = await Post.find().sort({ createdAt: -1 }).populate("userId", "username profilePic email")
 
         res.status(200).json({ data: posts, message: "Posts fetched successfully" });
     } catch (error) {
