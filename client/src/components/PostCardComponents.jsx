@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Heart, MessageCircle, Share2 } from "lucide-react";
+import BookMarkBtnComponent from "./BookMarkBtnComponent";
 
 export default function PostCardComponents() {
   const { posts } = useSelector((state) => state.posts);
@@ -84,7 +85,7 @@ export default function PostCardComponents() {
             )}
 
             {/* Interaction Buttons */}
-            <div className="flex gap-4">
+            <div className="flex items-center gap-4">
               <button className="btn btn-ghost text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-200">
                 <Heart className="w-5 h-5" />
                 <span className="ml-1 text-sm">24</span>
@@ -97,6 +98,9 @@ export default function PostCardComponents() {
                 <Share2 className="w-5 h-5" />
                 <span className="ml-1 text-sm">3</span>
               </button>
+              <div>
+                <BookMarkBtnComponent/>
+              </div>
             </div>
           </div>
         </div>

@@ -1,6 +1,4 @@
 import Bookmark from "../models/bookmark.model.js";
-import Post from "../models/post.model.js";
-import User from "../models/user.model.js";
 
 export const createBookMark = async (req, res) => {
   try {

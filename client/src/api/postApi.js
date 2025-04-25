@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useQuery, useMutation, useInfiniteQuery } from "@tanstack/react-query";
+import { useMutation, useInfiniteQuery } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { setLoading, setPosts, setError } from "../redux/slice/postSlice";
 
