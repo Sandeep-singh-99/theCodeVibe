@@ -23,7 +23,7 @@ export default function App() {
   return (
     <div className="flex min-h-screen">
       <LeftSideBar />
-      <main className="flex-1 ml-24 lg:ml-72 p-6">
+      <main className="flex-1 ml-24 lg:ml-72 px-6">
         <Outlet />
       </main>
       <Toaster

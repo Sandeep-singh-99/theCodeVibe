@@ -1,5 +1,5 @@
 import React, {  useState } from "react";
-import {  Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, PodcastIcon, Settings, SquarePen, TrendingUp, UserCircle } from "lucide-react";
+import {  Bell, Binary, BookMarkedIcon, Home, LogIn, MessageCircleCode, Plus, Settings, TrendingUp, UserCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-hot-toast";
@@ -57,19 +57,13 @@ export default function LeftSideBar() {
             <span className="hidden lg:inline ml-4 text-xl">Message</span>
           </button>
 
-          <button onClick={() => handleNavClick("")}
+          <button onClick={() => handleNavClick("/bookmark")}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <BookMarkedIcon/>
             <span className="hidden lg:inline ml-4 text-xl">BookMark</span>
           </button>
 
-          <button onClick={() => handleNavClick("/setting")}
-            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
-          >
-            <Settings/>
-            <span className="hidden lg:inline ml-4 text-xl">Settings</span>
-          </button>
 
           {
             isAuthenticated && (
@@ -77,7 +71,7 @@ export default function LeftSideBar() {
               onClick={() => setIsModalOpen(true)}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
-            <SquarePen/>
+            <Plus/>
             <span className="hidden lg:inline ml-4 text-xl">Create</span>
           </button>  
             )
@@ -93,6 +87,13 @@ export default function LeftSideBar() {
           >
             <UserCircle/>
             <span className="hidden lg:inline ml-4 text-xl">Profile</span>
+          </button>
+
+          <button onClick={() => handleNavClick("/setting")}
+            className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
+          >
+            <Settings/>
+            <span className="hidden lg:inline ml-4 text-xl">Settings</span>
           </button>
 
           {

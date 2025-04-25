@@ -5,6 +5,7 @@ import SignUp from "../pages/SignUp";
 import Login from "../pages/Login";
 import Setting from "../pages/Setting";
 import EditProfile from "../pages/EditProfile";
+import BookMark from "../pages/BookMark";
 
 const routers = createBrowserRouter([
     {
@@ -30,6 +31,10 @@ const routers = createBrowserRouter([
             {
                 path: "edit-profile",
                 element: <EditProfile/>
+            },
+            {
+                path: "bookmark",
+                element: <BookMark/>
             }
         ]
     }

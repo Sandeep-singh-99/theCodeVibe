@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import { ConnectDB }  from './config/db.js';
 import userRoute from './routers/user.route.js'
 import postRoute from './routers/post.route.js';
+import bookmarkRoute from './routers/bookmark.route.js'
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -22,6 +23,7 @@ app.use(morgan('dev'));
 
 app.use('/api/auth', userRoute)
 app.use('/api/post', postRoute)
+app.use('/api/bookmark', bookmarkRoute)
 
 
 

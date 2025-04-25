@@ -34,7 +34,7 @@ export default function Setting() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-white font-sans">
+    <div className="min-h-screen p-6 bg-white dark:bg-black text-gray-900 dark:text-white font-sans">
       {/* Header */}
       <div className="border-b border-gray-200 dark:border-gray-800 px-4 py-3">
         <h1 className="text-xl font-semibold">Settings</h1>
