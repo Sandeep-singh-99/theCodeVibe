@@ -96,12 +96,12 @@ export default function PostModalComponent({ isOpen, onClose }) {
   return createPortal(
     <dialog
       id="post_modal"
-      className="modal fixed inset-0 z-[1000 flex items-center justify-center bg-black bg-opacity-50"
+      className="modal fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50"
       open={isOpen}
       onClick={handleOverlayClick}
       aria-labelledby="post_modal_title"
     >
-      <div className="modal-box bg-black shadow-2xl/100 shadow-gray-400 text-white w-full max-w-lg rounded-lg">
+      <div className="modal-box bg-black shadow-2xl/100 shadow-gray-400 border border-gray-50 text-white w-full max-w-lg rounded-lg">
         <div className="flex items-center">
           <button
             onClick={onClose}

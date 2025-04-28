@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Camera, User, PencilLine } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useUpdatedProfile } from "../api/authApi";
+import toast from "react-hot-toast";
 
 export default function EditProfile() {
   const { user } = useSelector((state) => state.auth);
@@ -30,7 +31,6 @@ export default function EditProfile() {
     if (profilePic) {
       formData.append("image", profilePic);
     }
-
     updateProfile(formData);
   };
 

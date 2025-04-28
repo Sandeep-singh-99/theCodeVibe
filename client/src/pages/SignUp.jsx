@@ -35,7 +35,7 @@ export default function SignUp() {
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("fullName", fullName);
+    formData.append("username", fullName);
     formData.append("email", email);
     formData.append("password", password);
     if (profileImage) {

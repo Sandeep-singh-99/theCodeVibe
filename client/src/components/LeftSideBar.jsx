@@ -82,7 +82,7 @@ export default function LeftSideBar() {
           isOpen={isModalOpen}
           />        
 
-          <button onClick={() => handleNavClick("")}
+          <button onClick={() => handleNavClick("/profile")}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <UserCircle/>

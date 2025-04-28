@@ -6,6 +6,7 @@ import Login from "../pages/Login";
 import Setting from "../pages/Setting";
 import EditProfile from "../pages/EditProfile";
 import BookMark from "../pages/BookMark";
+import Profile from "../pages/Profile";
 
 const routers = createBrowserRouter([
     {
@@ -35,6 +36,10 @@ const routers = createBrowserRouter([
             {
                 path: "bookmark",
                 element: <BookMark/>
+            },
+            {
+                path: "profile",
+                element: <Profile/>
             }
         ]
     }
