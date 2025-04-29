@@ -44,7 +44,7 @@ export default function PostCardComponents() {
 
             {/* Media: Images and Videos */}
             {(post.imagePic.length > 0 || post.videos.length > 0) && (
-              <div className="mb-6">
+              <div className="">
                 <div className="carousel rounded-xl w-full h-[450px] relative overflow-hidden">
                   {[...post.imagePic, ...post.videos].map((media, index) => (
                     <div
@@ -99,7 +99,7 @@ export default function PostCardComponents() {
                 <span className="ml-1 text-sm">3</span>
               </button>
               <div>
-                <BookMarkBtnComponent/>
+                <BookMarkBtnComponent id={post._id}/>
               </div>
             </div>
           </div>
