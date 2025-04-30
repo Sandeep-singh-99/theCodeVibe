@@ -1,23 +1,79 @@
-import React from "react";
-import { MessageSquare, Plus } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Plus } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { useSideBarUser } from "../api/sideBarApi";
+import { setUsers } from "../redux/slice/chatSlice";
+
+const ConversationItem = ({ conv, isActive, onSelect }) => {
+  return (
+    <li
+      className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+        isActive ? "bg-primary text-primary-content" : "hover:bg-base-200"
+      }`}
+      tabIndex={0}
+      role="button"
+      aria-label={`Select conversation with ${conv.username}`}
+      aria-current={isActive ? "true" : "false"}
+      onClick={() => onSelect(conv.id)}
+      onKeyDown={(e) => e.key === "Enter" && onSelect(conv.id)}
+    >
+      <div className="flex items-center gap-3">
+        {/* <MessageSquare className="w-5 h-5 text-base-content/60" /> */}
+        <div className="flex items-center gap-2">
+          <img
+            src={conv.profilePic || "https://via.placeholder.com/40"}
+            alt={`${conv.username}'s profile picture`}
+            className="w-10 h-10 rounded-full object-cover"
+          />
+          <h4 className="font-medium text-base-content">{conv.username}</h4>
+        </div>
+      </div>
+    </li>
+  );
+};
+
+const SkeletonLoader = () => (
+  <div className="p-3">
+    {[...Array(3)].map((_, i) => (
+      <div key={i} className="flex items-center gap-3 p-3 animate-pulse">
+        <div className="w-5 h-5 bg-base-200 rounded" />
+        <div className="w-10 h-10 bg-base-200 rounded-full" />
+        <div className="w-3/4 h-4 bg-base-200 rounded" />
+      </div>
+    ))}
+  </div>
+);
 
 export default function SideBar() {
-  const conversations = [
-    { id: 1, title: "John Doe", lastMessage: "Hey, how's it going?" },
-    { id: 2, title: "Jane Smith", lastMessage: "Let's meet tomorrow!" },
-  ];
+  const { users, loading } = useSelector((state) => state.chat);
+  const { data: chatUsers, isLoading } = useSideBarUser();
+  const dispatch = useDispatch();
+  const [activeConversation, setActiveConversation] = useState(null);
+
+  useEffect(() => {
+    if (chatUsers) {
+      dispatch(setUsers(chatUsers.data));
+    }
+  }, [chatUsers, dispatch]);
+
+  const handleSelectConversation = (id) => {
+    setActiveConversation(id);
+  };
+
+  const conversations = users || [];
 
   return (
     <aside
-      className="w-full lg:w-80 bg-base-100 flex flex-col h-full"
+      className="w-full lg:w-80 bg-base-100 flex flex-col h-full shadow-lg rounded-lg"
       aria-label="Conversation sidebar"
     >
       {/* Header */}
       <div className="p-4 border-b border-base-300 flex items-center justify-between">
         <h3 className="text-lg font-semibold text-base-content">Chats</h3>
         <button
-          className="btn btn-ghost btn-sm"
+          className="btn btn-ghost btn-sm hover:bg-primary hover:text-primary-content transition-colors"
           aria-label="Start new conversation"
+          onClick={() => alert("Open new conversation modal")}
         >
           <Plus className="w-5 h-5" />
         </button>
@@ -25,26 +81,18 @@ export default function SideBar() {
 
       {/* Conversation List */}
       <ul className="flex-1 overflow-auto p-2">
-        {conversations.map((conv) => (
-          <li
-            key={conv.id}
-            className="p-3 rounded-lg hover:bg-base-200 cursor-pointer transition-colors"
-            tabIndex={0}
-            role="button"
-            aria-label={`Select conversation with ${conv.title}`}
-          >
-            <div className="flex items-center gap-3">
-              <MessageSquare className="w-5 h-5 text-base-content/60" />
-              <div>
-                <h4 className="font-medium text-base-content">{conv.title}</h4>
-                <p className="text-sm text-base-content/60 truncate">
-                  {conv.lastMessage}
-                </p>
-              </div>
-            </div>
-          </li>
-        ))}
-        {conversations.length === 0 && (
+        {isLoading || loading ? (
+          <SkeletonLoader />
+        ) : conversations.length > 0 ? (
+          conversations.map((conv) => (
+            <ConversationItem
+              key={conv.id}
+              conv={conv}
+              isActive={activeConversation === conv.id}
+              onSelect={handleSelectConversation}
+            />
+          ))
+        ) : (
           <p className="text-center text-base-content/60 p-4">
             No conversations yet.
           </p>

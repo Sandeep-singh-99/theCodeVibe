@@ -20,8 +20,8 @@ export const getUserSideBar = async (req, res) => {
 
     const user = await User.find(query).select("-password")
 
-    if (user.length ===  0) {
-      return res.status(200).json({ user })
+    if (user.length >  0) {
+      return res.status(200).json({ data: user })
     } else {
       return res.status(400).json({ error: "No user found" })
     }
