@@ -1,6 +1,34 @@
 import Message from "../models/message.model.js";
+import User from "../models/user.model.js";
 import { getReceiverSocketId, io } from "../socket/socket.js";
 import imageKit from "../utils/imagekit.js";
+
+export const getUserSideBar = async (req, res) => {
+  try {
+    const loggedInUserId = req.user._id;
+
+    const { search } = req.query;
+
+    let query = { _id: { $ne: loggedInUserId }}
+
+    if (search) {
+      query.$or = [
+        { fullName: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const user = await User.find(query).select("-password")
+
+    if (user.length ===  0) {
+      return res.status(200).json({ user })
+    } else {
+      return res.status(400).json({ error: "No user found" })
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
 
 export const sendMessage = async (req, res) => {
   try {

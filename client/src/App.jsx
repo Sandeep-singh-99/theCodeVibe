@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import LeftSideBar from "./components/LeftSideBar";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { checkAuth, setError } from "./redux/slice/authSlice";
 import toast, { Toaster } from "react-hot-toast";
 import { useCheckAuth } from "./api/authApi";
@@ -9,6 +9,7 @@ import { useCheckAuth } from "./api/authApi";
 export default function App() {
   const dispatch = useDispatch();
   const { data: authData, error: authError } = useCheckAuth();
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (authData) {
@@ -19,6 +20,12 @@ export default function App() {
       dispatch(setError(authError.response?.data?.message || authError.message));
     }
   }, [authData, authError, dispatch]);
+
+  useEffect(() => {
+    if (user) {
+      
+    }
+  },[user, dispatch])
 
   return (
     <div className="flex min-h-screen">
