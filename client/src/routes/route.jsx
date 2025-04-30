@@ -7,6 +7,7 @@ import Setting from "../pages/Setting";
 import EditProfile from "../pages/EditProfile";
 import BookMark from "../pages/BookMark";
 import Profile from "../pages/Profile";
+import Message from "../pages/Message";
 
 const routers = createBrowserRouter([
     {
@@ -40,6 +41,10 @@ const routers = createBrowserRouter([
             {
                 path: "profile",
                 element: <Profile/>
+            },
+            {
+                path: "message",
+                element: <Message/>
             }
         ]
     }
