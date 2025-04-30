@@ -9,8 +9,9 @@ import { ConnectDB }  from './config/db.js';
 import userRoute from './routers/user.route.js'
 import postRoute from './routers/post.route.js';
 import bookmarkRoute from './routers/bookmark.route.js'
+import { app, server } from './socket/socket.js'
 
-const app = express();
+// const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.use(cors({
@@ -27,7 +28,7 @@ app.use('/api/bookmark', bookmarkRoute)
 
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     ConnectDB()
     console.log(`server is running http://localhost:${PORT}`);
 })
