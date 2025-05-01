@@ -5,6 +5,9 @@ import { useSideBarUser } from "../api/sideBarApi";
 import { setUsers } from "../redux/slice/chatSlice";
 
 const ConversationItem = ({ conv, isActive, onSelect }) => {
+  const { onlineUsers } = useSelector((state) => state.chat);
+  const isOnline = onlineUsers.includes(conv._id);
+
   return (
     <li
       className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
@@ -18,14 +21,25 @@ const ConversationItem = ({ conv, isActive, onSelect }) => {
       onKeyDown={(e) => e.key === "Enter" && onSelect(conv.id)}
     >
       <div className="flex items-center gap-3">
-        {/* <MessageSquare className="w-5 h-5 text-base-content/60" /> */}
-        <div className="flex items-center gap-2">
+        <div className="relative flex items-center gap-2">
           <img
             src={conv.profilePic || "https://via.placeholder.com/40"}
             alt={`${conv.username}'s profile picture`}
             className="w-10 h-10 rounded-full object-cover"
           />
-          <h4 className="font-medium text-base-content">{conv.username}</h4>
+          {/* Online Status Indicator */}
+          {isOnline && (
+            <span
+              className="absolute top-0 left-0 w-3 h-3 bg-green-500 rounded-full border-2 border-base-100"
+              aria-label={`${conv.username} is online`}
+              title={`${conv.username} is online`}
+            />
+          )}
+          <h4 className="font-medium text-base-content">{conv.username}
+          <span className="text-sm opacity-60 ml-2">
+                {isOnline ? "(Online)" : "(Offline)"}
+              </span>
+          </h4>
         </div>
       </div>
     </li>
@@ -34,9 +48,8 @@ const ConversationItem = ({ conv, isActive, onSelect }) => {
 
 const SkeletonLoader = () => (
   <div className="p-3">
-    {[...Array(3)].map((_, i) => (
+    {[...Array(10)].map((_, i) => (
       <div key={i} className="flex items-center gap-3 p-3 animate-pulse">
-        <div className="w-5 h-5 bg-base-200 rounded" />
         <div className="w-10 h-10 bg-base-200 rounded-full" />
         <div className="w-3/4 h-4 bg-base-200 rounded" />
       </div>
@@ -101,3 +114,5 @@ export default function SideBar() {
     </aside>
   );
 }
+
+
