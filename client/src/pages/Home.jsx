@@ -69,7 +69,7 @@ export default function Home() {
 
         <div className="hidden lg:block w-80 sticky top-6 h-fit z-[10]">
           <div className="rounded-2xl shadow-lg">
-            <SuggestedUsers />
+            {/* <SuggestedUsers /> */}
           </div>
         </div>
       </div>

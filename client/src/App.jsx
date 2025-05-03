@@ -65,7 +65,7 @@ export default function App() {
   }, [user, dispatch]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-black">
       <LeftSideBar />
       <main className="flex-1 ml-24 lg:ml-72 px-6">
         <Outlet />

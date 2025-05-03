@@ -14,13 +14,13 @@ export default function PostCardComponents() {
   }
 
   return (
-    <div className="space-y-8 max-w-3xl mx-auto px-4">
+    <div className="space-y-4 max-w-3xl mx-auto px-4">
       {posts.map((post) => (
         <div
           key={post._id}
-          className="card bg-black shadow-xl hover:shadow-2xl hover:glass transition-all duration-300 border border-base-200/90 rounded-2xl overflow-hidden"
+          className="card bg-black shadow-xl hover:shadow-2xl hover:glass transition-all duration-300 border border-base-100 rounded-2xl overflow-hidden"
         >
-          <div className="card-body p-6">
+          <div className="p-6">
             {/* User Info */}
             <div className="flex items-center space-x-4 mb-5">
               <div className="avatar">
@@ -45,7 +45,7 @@ export default function PostCardComponents() {
             {/* Media: Images and Videos */}
             {(post.imagePic.length > 0 || post.videos.length > 0) && (
               <div className="">
-                <div className="carousel rounded-xl w-full h-[450px] relative overflow-hidden">
+                <div className="carousel rounded-xl w-full h-[400px] relative overflow-hidden">
                   {[...post.imagePic, ...post.videos].map((media, index) => (
                     <div
                       key={`${post._id}-media-${index}`}
@@ -54,7 +54,7 @@ export default function PostCardComponents() {
                       {media.includes("video") || media.endsWith(".mp4") ? (
                         <video
                           controls
-                          className="w-full h-[450px] object-contain rounded-xl transition-transform duration-300 hover:scale-[1.02]"
+                          className="w-full h-[400px] object-contain rounded-xl transition-transform duration-300 hover:scale-[1.02]"
                         >
                           <source src={media} type="video/mp4" />
                           Your browser does not support the video tag.
@@ -63,7 +63,7 @@ export default function PostCardComponents() {
                         <img
                           src={media}
                           alt={`Post media ${index + 1}`}
-                          className="w-full h-[450px] object-contain rounded-xl transition-transform duration-300 hover:scale-[1.02]"
+                          className="w-full h-[400px] object-contain rounded-xl transition-transform duration-300 hover:scale-[1.02]"
                         />
                       )}
                       {[...post.imagePic, ...post.videos].length > 1 && (
@@ -79,7 +79,7 @@ export default function PostCardComponents() {
 
             {/* Content */}
             {post.content && (
-              <p className="text-base-content/100 text-base font-serif leading-relaxed mb-6 font-light tracking-wide">
+              <p className="text-base-content/100 text-base font-serif leading-relaxed mb-3 font-light tracking-wide">
                 {post.content}
               </p>
             )}

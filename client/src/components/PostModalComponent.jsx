@@ -101,7 +101,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
       onClick={handleOverlayClick}
       aria-labelledby="post_modal_title"
     >
-      <div className="modal-box bg-black shadow-2xl/100 shadow-gray-400 border border-gray-50 text-white w-full max-w-lg rounded-lg">
+      <div className="modal-box bg-base-300 shadow-2xl/100 shadow-gray-400 border border-gray-400 text-white w-full max-w-xl rounded-lg">
         <div className="flex items-center">
           <button
             onClick={onClose}
@@ -116,7 +116,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
             <img
               src={user?.profilePic}
               alt="User Avatar"
-              className="w-10 h-10 rounded-full border-2 border-white cursor-pointer hover:border-gray-300 transition-colors"
+              className="w-10 h-10 rounded-full border-2 border-blue-400 object-cover cursor-pointer hover:border-blue-600 transition-colors"
             />
           </div>
 
@@ -199,7 +199,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
 
         <div className="flex justify-between items-center mt-4 border-t border-gray-700 pt-2">
           <div className="flex space-x-3">
-            <label className="cursor-pointer text-white">
+            <label className="cursor-pointer">
               <input
                 type="file"
                 accept="image/jpeg,image/png"
@@ -207,9 +207,9 @@ export default function PostModalComponent({ isOpen, onClose }) {
                 onChange={handleMediaChange}
                 aria-label="Upload image"
               />
-              <ImageMinus />
+              <ImageMinus className="text-blue-400" />
             </label>
-            <label className="cursor-pointer text-white">
+            <label className="cursor-pointer">
               <input
                 type="file"
                 accept="video/mp4"
@@ -217,7 +217,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
                 onChange={handleMediaChange}
                 aria-label="Upload video"
               />
-              <VideoOff />
+              <VideoOff className="text-blue-400" />
             </label>
           </div>
           <div className="flex items-center space-x-2">

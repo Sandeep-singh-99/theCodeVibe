@@ -104,7 +104,7 @@ export default function LeftSideBar() {
                 alt="Profile"
                 className="w-10 h-10 rounded-full border-2 border-white cursor-pointer hover:border-gray-300 transition-colors"
                 />
-                <h1 className="ml-2 text-xl hidden md:block">{user?.username}</h1>
+                <h1 className="ml-2 text-xl hidden lg:block">{user?.username}</h1>
               </div>
             ) : (
               <Link
