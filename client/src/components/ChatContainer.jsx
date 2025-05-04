@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import ChatHeader from "./ChatHeader";
 import MessageInput from "./MessageInput";
 import { useGetChatMessages } from "../api/chatApi";
-import { Loader2, Download, File, } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { formatMessageTime } from "../utils/formateTime";
 
@@ -57,40 +57,13 @@ export default function ChatContainer() {
           </time>
         </div>
         <div className="chat-bubble flex flex-col relative">
-          {message.image && (
+          {message.images?.length > 0 && message.images[0] && (
             <div className="relative">
               <img
-                src={message.image}
+                src={message.images[0]}
                 alt="Attachment"
-                className="sm:max-w-[200px] rounded-md mb-2 cursor-pointer"
-                onClick={() => onDownload(message.image, true)}
+                className="sm:max-w-[200px] rounded-md mb-2"
               />
-            </div>
-          )}
-          {message.video && (
-            <div className="relative">
-              <video
-                src={message.videos}
-                controls
-                className="sm:max-w-[200px] rounded-md mb-2 cursor-pointer"
-                onClick={(e) =>
-                  e.target.paused &&
-                  Download(message.videos, false, `chat-video-${message._id}`)
-                }
-              />
-            </div>
-          )}
-          {message.file && (
-            <div className="mb-2">
-              <a
-                href={message.file}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-500 hover:underline flex items-center gap-1"
-              >
-                <File size={20} />
-                View File
-              </a>
             </div>
           )}
           {message.text && (

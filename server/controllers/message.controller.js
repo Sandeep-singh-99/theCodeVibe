@@ -36,69 +36,34 @@ export const sendMessage = async (req, res) => {
     const senderId = req.user._id;
     const receiverId = req.params.id;
 
-    let imageUrl = "";
-    let fileUrl = "";
-    let videoUrl = "";
-    let imageKitFileId = "";
-    let fileKitFileId = "";
-    let videosKitFileId = "";
+    let imageUrl = null;
+    let imageKitFileId = null;
 
     if (req.files && req.files["image"]) {
       const imageFile = req.files["image"][0];
-      if (!imageFile.mimeType.startsWith("image/")) {
+      if (!imageFile.mimetype.startsWith("image/")) {
         return res.status(400).json({ error: "Invalid image file type" });
       }
 
       const uploadResponse = await imageKit.upload({
-        file: file.buffer,
-        fileName: file.originalname,
+        file: imageFile.buffer,
+        fileName: imageFile.originalname,
         folder: "/Social-media-app/messages",
       });
       imageUrl = uploadResponse.url;
       imageKitFileId = uploadResponse.fileId;
     }
 
-    if (req.files && req.files["files"]) {
-      const file = req.files["files"][0];
-
-      const uploadResponse = await imageKit.upload({
-        file: file.buffer,
-        fileName: file.originalname,
-        folder: "/Social-media-app/messages",
-      });
-      fileUrl = uploadResponse.url;
-      fileKitFileId = uploadResponse.fileId;
-    }
-
-    if (req.files && req.files["video"]) {
-      const videoFile = req.files["video"][0];
-      if (!videoFile.mimeType.startsWith("video/")) {
-        return res.status(400).json({ error: "Invalid video file type" });
-      }
-
-      const uploadResponse = await imageKit.upload({
-        file: videoFile.buffer,
-        fileName: videoFile.originalname,
-        folder: "/Social-media-app/messages",
-      });
-      videoUrl = uploadResponse.url;
-      videosKitFileId = uploadResponse.fileId;
-    }
-
-    if (!text?.trim() && !imageUrl && !fileUrl && !videoUrl) {
-      return res.status(400).json({ error: "Please provide a message" });
+    if (!text?.trim() && !imageUrl) {
+      return res.status(400).json({ error: "Please provide a message or image" });
     }
 
     const newMessage = await Message.create({
       senderId,
       receiverId,
       text: text?.trim() || "",
-      image: imageUrl || "",
-      imagekitFileId: imageKitFileId || "",
-      file: fileUrl || "",
-      filekitFileId: fileKitFileId || "",
-      videos: videoUrl || "",
-      videoKitFileId: videosKitFileId || "",
+      images: imageUrl ? [imageUrl] : [],
+      imageKitFileId: imageKitFileId ? [imageKitFileId] : [],
     });
 
     const receiverSocketId = getReceiverSocketId(receiverId);

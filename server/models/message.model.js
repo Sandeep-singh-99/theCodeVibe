@@ -22,26 +22,11 @@ const messageSchema = new Schema({
         default: [],
     },
 
-    videos: {
-        type: [String],
-        default: [],
-    },
-
-    file: {
-        type: String,
-    },
-
-    fileKitFileId: {
-        type: String,
-    },
-
     imageKitFileId: {
         type: [String],
     },
 
-    videosKitFileId: {
-        type: [String],
-    }
+   
 }, {timestamps: true});
 
 const Message = model('Message', messageSchema);
