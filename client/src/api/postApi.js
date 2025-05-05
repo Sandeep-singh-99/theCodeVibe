@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useMutation, useInfiniteQuery } from "@tanstack/react-query";
+import { useMutation, useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { useDispatch } from "react-redux";
 import { setLoading, setPosts, setError } from "../redux/slice/postSlice";
 
@@ -21,6 +21,24 @@ export const useCreatePost = () => {
             );
         },
     })
+}
+
+export const useGetTotalPosts = () => {
+  return useQuery({
+    queryKey: ["get-total-post"],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/get-total-post`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Get total posts failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  })
 }
 
 

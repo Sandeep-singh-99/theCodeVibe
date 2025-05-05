@@ -2,97 +2,112 @@ import Post from "../models/post.model.js";
 import imageKit from "../utils/imagekit.js";
 
 export const createPost = async (req, res) => {
-    try {
-        
-        if (!req.user || !req.user._id) {
-            return res.status(401).json({ error: "Please login to create a post" });
-        }
-        
-        const userId = req.user._id;
-        const { content } = req.body;
-       
-        const images = [];
-        const imageKitFileIds = [];
-        const videos = [];
-        const videoKitFileIds = [];
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ error: "Please login to create a post" });
+    }
 
-        // Handle image uploads if provided
-        if (req.files && req.files['images']) {
-            const imageFiles = req.files['images'];
-            
-            for (const file of imageFiles) {
-                const uploadResponse = await imageKit.upload({
-                    file: file.buffer,
-                    fileName: file.originalname,
-                    folder: "/Social-media-app/images",
-                });
-                
-                images.push(uploadResponse.url);
-                imageKitFileIds.push(uploadResponse.fileId);
-            }
-        }
+    const userId = req.user._id;
+    const { content } = req.body;
 
-        // Handle video uploads if provided
-        if (req.files && req.files['videos']) {
-            const videoFiles = req.files['videos'];
-            
-            for (const file of videoFiles) {
-                const uploadResponse = await imageKit.upload({
-                    file: file.buffer,
-                    fileName: file.originalname,
-                    folder: "/Social-media-app/videos",
-                });
-                
-                videos.push(uploadResponse.url);
-                videoKitFileIds.push(uploadResponse.fileId);
-            }
-        }
+    const images = [];
+    const imageKitFileIds = [];
+    const videos = [];
+    const videoKitFileIds = [];
 
-        const newPost = await Post.create({
-            content,
-            userId,
-            imagePic: images,          
-            imageKitFileId: imageKitFileIds, 
-            videos: videos,         
-            videoKitFileId: videoKitFileIds  
+    // Handle image uploads if provided
+    if (req.files && req.files["images"]) {
+      const imageFiles = req.files["images"];
+
+      for (const file of imageFiles) {
+        const uploadResponse = await imageKit.upload({
+          file: file.buffer,
+          fileName: file.originalname,
+          folder: "/Social-media-app/images",
         });
 
-        res.status(201).json({ 
-            data: newPost, 
-            message: "Post created successfully" 
+        images.push(uploadResponse.url);
+        imageKitFileIds.push(uploadResponse.fileId);
+      }
+    }
+
+    // Handle video uploads if provided
+    if (req.files && req.files["videos"]) {
+      const videoFiles = req.files["videos"];
+
+      for (const file of videoFiles) {
+        const uploadResponse = await imageKit.upload({
+          file: file.buffer,
+          fileName: file.originalname,
+          folder: "/Social-media-app/videos",
+        });
+
+        videos.push(uploadResponse.url);
+        videoKitFileIds.push(uploadResponse.fileId);
+      }
+    }
+
+    const newPost = await Post.create({
+      content,
+      userId,
+      imagePic: images,
+      imageKitFileId: imageKitFileIds,
+      videos: videos,
+      videoKitFileId: videoKitFileIds,
+    });
+
+    res.status(201).json({
+      data: newPost,
+      message: "Post created successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAllPost = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const posts = await Post.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate("userId", "username profilePic email");
+
+    const total = await Post.countDocuments();
+
+    res.status(200).json({
+      data: {
+        posts,
+        page,
+        limit,
+        total,
+      },
+      message: "Posts fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getTotalPosts = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        if (!userId) {
+            return res.status(401).json({ error: "Please login to get your posts" });
+        }
+
+        const totalPosts = await Post.countDocuments({ userId });
+
+        res.status(200).json({
+            data: totalPosts,
+            message: "Total posts fetched successfully",
         });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 }
-
-
-export const getAllPost = async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1; 
-      const limit = parseInt(req.query.limit) || 10; 
-      const skip = (page - 1) * limit; 
-  
-   
-      const posts = await Post.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .populate("userId", "username profilePic email");
-  
-      
-      const total = await Post.countDocuments();
-  
-      res.status(200).json({
-        data: {
-          posts,
-          page,
-          limit,
-          total,
-        },
-        message: "Posts fetched successfully",
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  };

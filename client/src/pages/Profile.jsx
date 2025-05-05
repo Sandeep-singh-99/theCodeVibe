@@ -1,10 +1,24 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useGetTotalPosts } from '../api/postApi';
+import { setTotalPosts } from '../redux/slice/postSlice';
 
 export default function Profile() {
 
   const { user } = useSelector((state) => state.auth);
+
+  const { totalPosts } = useSelector((state) => state.posts);
+
+  const {data: totalPost} = useGetTotalPosts()
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (totalPost) {
+      dispatch(setTotalPosts(totalPost.data))
+    }
+  })
 
   return (
     <div className="min-h-screen">
@@ -28,7 +42,7 @@ export default function Profile() {
                 {/* Stats */}
                 <div className="flex justify-center md:justify-start gap-6 mb-4">
                   <div>
-                    <span className="font-bold">{user?.posts}</span>25 posts
+                    <span className="font-bold">{totalPosts}</span> posts
                   </div>
                   <div>
                     <span className="font-bold">{user?.followers}</span>855 followers

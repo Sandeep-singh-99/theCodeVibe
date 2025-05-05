@@ -6,6 +6,7 @@ const postSlice = createSlice({
         isLoading: false,
         isError: false,
         posts: [],
+        totalPosts: 0,
     },
 
     reducers: {
@@ -15,6 +16,10 @@ const postSlice = createSlice({
 
         setError: (state, action) => {
             state.isError = action.payload;
+        },
+
+        setTotalPosts: (state, action) => {
+            state.totalPosts = action.payload;
         },
 
         setPosts: (state, action) => {
@@ -27,6 +32,6 @@ const postSlice = createSlice({
     }
 })
 
-export const { setLoading, setError, setPosts, addPost } = postSlice.actions;
+export const { setLoading, setError, setPosts, addPost, setTotalPosts } = postSlice.actions;
 
 export default postSlice.reducer;
