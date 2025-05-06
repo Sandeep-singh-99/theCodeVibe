@@ -37,7 +37,19 @@ const postSlice = createSlice({
         },
 
         addPost: (state, action) => {
-            state.posts.push(action.payload);
+            const newPost = {
+                ...action.payload,
+                userId: {
+                  _id: action.payload.userId,
+                  username: state.posts[0]?.userId?.username || "Unknown User", 
+                  email: state.posts[0]?.userId?.email || "",
+                  profilePic:
+                    state.posts[0]?.userId?.profilePic ||
+                    "https://via.placeholder.com/48",
+                },
+              };
+              state.posts = [newPost, ...state.posts];
+              state.postsUserId = [newPost, ...state.postsUserId];
         },
     }
 })

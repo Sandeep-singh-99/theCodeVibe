@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom"; 
 import { ImageMinus, VideoOff, X } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useCreatePost } from "../api/postApi";
+import { addPost } from "../redux/slice/postSlice";
 
 export default function PostModalComponent({ isOpen, onClose }) {
   const [postContent, setPostContent] = useState("");
@@ -13,6 +14,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
   const maxFileSize = 50 * 1024 * 1024;
 
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch()
   const {
     mutate: createPost,
     isPending,
@@ -41,6 +43,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
     createPost(formData, {
       onSuccess: (data) => {
         setPostData(data.data);
+        dispatch(addPost(data.data));
         setPostContent("");
         setMediaFile(null);
         setMediaPreview(null);
