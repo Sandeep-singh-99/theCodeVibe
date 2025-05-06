@@ -20,7 +20,6 @@ const PostContentComponent = () => {
   const [expandedPosts, setExpandedPosts] = useState({});
 
   const handleDelete = (postId) => {
-    console.log("Deleting post with ID:", postId);
     deletePost(postId, {
       onSuccess: () => {
         dispatch(setDeletePost(postId));

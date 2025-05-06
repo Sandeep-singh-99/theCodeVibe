@@ -100,3 +100,44 @@ export const useLogout = () => {
     },
   });
 };
+
+
+export const useFollowOrUnfollow = () => {
+  return useMutation({
+    mutationFn: async (userId) => {
+      const response = await axios.put(
+        `${API_URL}/follow/${userId}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Follow/Unfollow failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  });
+}
+
+
+export const useGetFollowerOrFollowing = () => {
+  return useQuery({
+    queryKey: ["follow-or-following"],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/follow-or-following`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Get followers/following failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  });
+}

@@ -6,6 +6,7 @@ const chatSlice = createSlice({
        onlineUsers: [],
        messages: [],
        users: [],
+       
     },
     reducers: {
         setOnlineUsers: (state, action) => {

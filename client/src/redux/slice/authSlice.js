@@ -30,11 +30,11 @@ const authSlice = createSlice({
         },
 
         setUpdateProfile: (state, action) => {
-            state.user = { ...state.user, ...action.payload };
+            state.user  = {...state.user, ...action.payload }
         },
 
         logout: (state) => {
-            state.isAuthenticated = false;
+            state.isAuthenticated = false; 
             state.user = null;
         },
         setSelectedUser: (state, action) => {

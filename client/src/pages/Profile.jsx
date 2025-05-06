@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useGetPostByUser, useGetTotalPosts } from "../api/postApi";
 import { setPostsUserId, setTotalPosts } from "../redux/slice/postSlice";
 import PostContentComponent from "../components/PostContentComponent";
+import { useGetFollowerOrFollowing } from "../api/authApi";
+import { setUpdateProfile } from "../redux/slice/authSlice";
 
 export default function Profile() {
   const { user } = useSelector((state) => state.auth);
@@ -12,10 +14,12 @@ export default function Profile() {
 
   const { data: postByUser } = useGetPostByUser();
 
+  const { data: FollowOrFollowing } = useGetFollowerOrFollowing()
+
   const dispatch = useDispatch();
 
   // State for active tab
-  const [activeTab, setActiveTab] = useState("posts");
+  const [activeTab, setActiveTab] = useState("following");
 
   useEffect(() => {
     if (totalPost?.data) {
@@ -24,37 +28,62 @@ export default function Profile() {
     if (postByUser?.data) {
       dispatch(setPostsUserId(postByUser.data));
     }
-  }, [totalPost, postByUser, dispatch]);
+
+    if (FollowOrFollowing?.data) {
+      console.log("FollowOrFollowing", FollowOrFollowing?.data);
+      
+      dispatch(setUpdateProfile( FollowOrFollowing?.data )); 
+    }
+  }, [totalPost, postByUser, FollowOrFollowing, dispatch]);
 
   const FollowersContent = () => (
     <div className="p-4">
       <h3 className="text-xl font-bold mb-4">Followers</h3>
-      <div className="border rounded-lg shadow-lg bg-white p-4">
+      <div className="border rounded-lg shadow-lg p-4">
         <ul className="list-none">
-          {[1, 2, 3].map((follower) => (
-            <li key={follower} className="py-2">
-              Follower {follower}
-            </li>
-          ))}
+          {user?.followers.length > 0 ? (
+            user.followers.map((follower) => (
+              <li key={follower._id} className="py-2 flex items-center gap-4">
+                <img
+                  src={follower.profilePic || "https://via.placeholder.com/40"}
+                  alt={follower.username}
+                  className="w-10 h-10 rounded-full"
+                />
+                <span className="font-medium">{follower.username}</span>
+              </li>
+            ))
+          ) : (
+            <p>No followers yet.</p>
+          )}
         </ul>
       </div>
     </div>
   );
-
+  
   const FollowingContent = () => (
     <div className="p-4">
       <h3 className="text-xl font-bold mb-4">Following</h3>
-      <div className="border rounded-lg shadow-lg bg-white p-4">
+      <div className="border rounded-lg shadow-lg p-4">
         <ul className="list-none">
-          {[1, 2, 3].map((following) => (
-            <li key={following} className="py-2">
-              Following {following}
-            </li>
-          ))}
+          {user?.following.length > 0 ? (
+            user.following.map((followed) => (
+              <li key={followed._id} className="py-2 flex items-center gap-4">
+                <img
+                  src={followed.profilePic}
+                  alt={followed.username}
+                  className="w-12 h-12 border border-purple-700 rounded-full"
+                />
+                <span className="font-medium text-white">{followed.username}</span>
+              </li>
+            ))
+          ) : (
+            <p>You're not following anyone.</p>
+          )}
         </ul>
       </div>
     </div>
   );
+  
 
   return (
     <div className="min-h-screen">
@@ -88,11 +117,11 @@ export default function Profile() {
                     <span className="font-bold">{totalPosts || 0}</span> posts
                   </div>
                   <div>
-                    <span className="font-bold">{user?.followers || 855}</span>{" "}
+                    <span className="font-bold">{user?.followers.length || 0}</span>
                     followers
                   </div>
-                  <div>
-                    <span className="font-bold">{user?.following || 356}</span>{" "}
+                  <div className="flex gap-2">
+                    <span className="font-bold">{user?.following.length || 0}</span>
                     following
                   </div>
                 </div>

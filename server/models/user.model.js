@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
 const userSchema = new Schema({
@@ -33,7 +33,17 @@ const userSchema = new Schema({
     bio: {
         type: String,
         default: "",
-    }
+    },
+
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    }],
+
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    }],
 },{timestamps: true});
 
 userSchema.pre("save", function (next) {
