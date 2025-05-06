@@ -1,16 +1,32 @@
-import { useSelector } from "react-redux";
-import { Heart, MessageCircle, Share2, FileText, MoreVertical } from "lucide-react"; 
+import { useDispatch, useSelector } from "react-redux";
+import {
+  Heart,
+  MessageCircle,
+  Share2,
+  FileText,
+  MoreVertical,
+} from "lucide-react";
+import { useDeletePost } from "../api/postApi";
+import { setDeletePost } from "../redux/slice/postSlice";
 
 const PostContentComponent = () => {
-  const { postsUserId, isLoading, isError } = useSelector((state) => state.posts);
+  const { postsUserId, isLoading, isError } = useSelector(
+    (state) => state.posts
+  );
 
- 
+  const dispatch = useDispatch();
+
+  const { mutate: deletePost } = useDeletePost();
+
   const handleDelete = (postId) => {
-    console.log(`Delete post with ID: ${postId}`);
-   
+    console.log("Deleting post with ID:", postId);
+    deletePost(postId, {
+      onSuccess: () => {
+        dispatch(setDeletePost(postId));
+      },
+    });
   };
 
- 
   if (isLoading) {
     return (
       <div className="p-6 text-center">
@@ -20,11 +36,12 @@ const PostContentComponent = () => {
     );
   }
 
-
   if (isError) {
     return (
       <div className="p-6 text-center">
-        <p className="text-red-500 font-medium">Failed to load posts. Please try again later.</p>
+        <p className="text-red-500 font-medium">
+          Failed to load posts. Please try again later.
+        </p>
         <button
           className="mt-4 btn btn-sm btn-outline btn-error"
           onClick={() => window.location.reload()}
@@ -35,11 +52,13 @@ const PostContentComponent = () => {
     );
   }
 
-
   if (!postsUserId || postsUserId.length === 0) {
     return (
       <div className="p-6 text-center">
-        <FileText className="mx-auto h-12 w-12 text-gray-400" aria-hidden="true" />
+        <FileText
+          className="mx-auto h-12 w-12 text-gray-400"
+          aria-hidden="true"
+        />
         <p className="mt-2 text-gray-500 font-medium">No posts available.</p>
       </div>
     );
@@ -62,7 +81,10 @@ const PostContentComponent = () => {
                 <div className="avatar mr-3">
                   <div className="w-12 rounded-full ring-2 ring-primary ring-offset-2">
                     <img
-                      src={post.userId.profilePic || "https://via.placeholder.com/48"}
+                      src={
+                        post.userId.profilePic ||
+                        "https://via.placeholder.com/48"
+                      }
                       alt={`${post.userId.username}'s profile`}
                       className="rounded-full"
                     />
@@ -114,7 +136,9 @@ const PostContentComponent = () => {
             </div>
             {/* Post Content */}
             <div className="p-4">
-              <p className="text-gray-700 text-base leading-relaxed">{post.content}</p>
+              <p className="text-gray-700 text-base leading-relaxed">
+                {post.content}
+              </p>
               {/* Post Media (*/}
               {post.imagePic?.length > 0 && (
                 <div className="mt-4">

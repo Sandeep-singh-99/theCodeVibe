@@ -59,6 +59,23 @@ export const useGetPostByUser = () => {
     })
 }
 
+export const useDeletePost = () => {
+  return useMutation({
+    mutationFn: async (id) => {
+      const response = await axios.delete(`${API_URL}/get-user-post-delete/${id}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Delete post failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  })
+}
+
 
 export const useGetAllPost = () => {
     const dispatch = useDispatch();
