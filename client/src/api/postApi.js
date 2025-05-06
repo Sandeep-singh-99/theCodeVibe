@@ -41,6 +41,24 @@ export const useGetTotalPosts = () => {
   })
 }
 
+export const useGetPostByUser = () => {
+    return useQuery({
+        queryKey: ["get-user-post"],
+        queryFn: async () => {
+            const response = await axios.get(`${API_URL}/get-user-post`, {
+                withCredentials: true,
+            });
+            return response.data;
+        },
+        onError: (error) => {
+            console.error(
+                "Get user posts failed:",
+                error.response?.data?.message || error.message
+            );
+        },
+    })
+}
+
 
 export const useGetAllPost = () => {
     const dispatch = useDispatch();

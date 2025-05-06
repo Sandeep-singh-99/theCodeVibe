@@ -1,7 +1,7 @@
 import express from 'express';
 import upload from '../middlewares/upload.middleware.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { createPost, getAllPost, getTotalPosts } from '../controllers/post.controller.js';
+import { createPost, getAllPost, getPostByUserId, getTotalPosts } from '../controllers/post.controller.js';
 
 const router = express.Router();
 
@@ -16,5 +16,7 @@ router.route("/create-post").post(authMiddleware, uplodFields, createPost)
 router.route("/get-all-post").get(getAllPost)
 
 router.route("/get-total-post").get(authMiddleware, getTotalPosts)
+
+router.route("/get-user-post").get(authMiddleware, getPostByUserId)
 
 export default router;

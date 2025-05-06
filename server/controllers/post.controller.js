@@ -111,3 +111,28 @@ export const getTotalPosts = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const getPostByUserId = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const posts = await Post.find({ userId })
+      .sort({ createdAt: -1 })
+      .populate("userId", "username profilePic email");
+
+    if (!posts || posts.length === 0) {
+      return res.status(404).json({ error: "No posts found for this user" });
+    }
+
+    res.status(200).json({
+      data: posts,
+      message: "Posts fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

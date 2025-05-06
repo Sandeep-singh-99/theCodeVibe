@@ -7,6 +7,7 @@ const postSlice = createSlice({
         isError: false,
         posts: [],
         totalPosts: 0,
+        postsUserId: [],
     },
 
     reducers: {
@@ -26,12 +27,16 @@ const postSlice = createSlice({
             state.posts = action.payload;
         },
 
+        setPostsUserId: (state, action) => {
+            state.postsUserId = action.payload;
+        },
+
         addPost: (state, action) => {
             state.posts.push(action.payload);
         },
     }
 })
 
-export const { setLoading, setError, setPosts, addPost, setTotalPosts } = postSlice.actions;
+export const { setLoading, setError, setPosts, addPost, setTotalPosts, setPostsUserId } = postSlice.actions;
 
 export default postSlice.reducer;
