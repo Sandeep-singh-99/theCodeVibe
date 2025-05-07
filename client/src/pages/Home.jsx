@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 export default function Home() {
   const dispatch = useDispatch();
   const { posts, isError: reduxError } = useSelector((state) => state.posts);
+  const { user } = useSelector((state) => state.auth);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading, isError, error } = useGetAllPost();
   const loadMoreRef = useRef(null);
 
@@ -69,7 +70,7 @@ export default function Home() {
 
         <div className="hidden lg:block w-80 sticky top-6 h-fit z-[10]">
           <div className="rounded-2xl shadow-lg">
-            <SuggestedUsers />
+           { user ? <SuggestedUsers /> : <div></div>}
           </div>
         </div>
       </div>

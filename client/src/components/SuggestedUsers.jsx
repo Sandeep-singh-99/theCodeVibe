@@ -22,12 +22,12 @@ const SuggestedUsers = () => {
         <div className="flex items-center space-x-2">
           <div className="w-10 h-10 bg-gray-600 rounded-full">
             <img
-            src={user.profilePic}
-            alt={`${user.username} profile`}
+            src={user?.profilePic}
+            alt={`${user?.username} profile`}
             className="w-10 h-10 rounded-full border border-purple-900 object-cover"
             />
           </div>
-          <span className="font-semibold">{user.username}</span>
+          <span className="font-semibold">{user?.username}</span>
         </div>
       </div>
 

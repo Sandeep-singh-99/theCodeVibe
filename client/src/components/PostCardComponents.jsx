@@ -77,7 +77,7 @@ export default function PostCardComponents() {
                     onClick={() => handleFollowToggle(post.userId._id)}
                     className={`btn btn-sm ${
                       isFollowing
-                        ? "border-2 border-gray-400 bg-base-300"
+                        ? "bg-base-100"
                         : "bg-base-100"
                     } text-sm transition-all duration-200`}
                     disabled={isPending}
