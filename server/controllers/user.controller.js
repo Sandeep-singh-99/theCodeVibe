@@ -147,54 +147,6 @@ export const updateProfile = async (req, res) => {
     }
 };
 
-// export const followOrUnfollow = async (req, res) => {
-//     try {
-//         const currentUserId = req.user?._id; 
-//         const targetUserId = req.params.id; 
-
-//         if (currentUserId === targetUserId) {
-//             return res.status(400).json({
-//                 message: 'You cannot follow/unfollow yourself',
-//                 success: false
-//             });
-//         }
-
-//         const currentUser = await User.findById(currentUserId)
-//         const targetUser = await User.findById(targetUserId)
-
-//         if (!currentUser || !targetUser) {
-//             return res.status(400).json({
-//                 message: 'User not found',
-//                 success: false
-//             });
-//         }
-
-//         const isAlreadyFollowing = currentUser.following.includes(targetUserId);
-//         if (isAlreadyFollowing) {
-//             // Unfollow logic
-//             await Promise.all([
-//                 User.updateOne({ _id: currentUserId }, { $pull: { following: targetUserId } }),
-//                 User.updateOne({ _id: targetUserId }, { $pull: { followers: currentUserId } }),
-//             ])
-//             return res.status(200).json({ message: 'Unfollowed successfully' });
-//         } else {
-//             // Follow logic
-//             await Promise.all([
-//                 User.updateOne({ _id: currentUserId }, { $push: { following: targetUserId } }),
-//                 User.updateOne({ _id: targetUserId }, { $push: { followers: currentUserId } }),
-//             ])
-//             return res.status(200).json({ message: 'Followed successfully'});
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({
-//             message: 'Internal server error',
-//             success: false
-//         });
-//     }
-// }
-
-
 export const followOrUnfollow = async (req, res) => {
     try {
         const currentUserId = req.user?._id;
@@ -264,6 +216,21 @@ export const getFollowerOrFollowing  = async (req, res) => {
         }
 
         res.status(200).json({ data: user, message: "User data fetched successfully" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
+
+export const getSuggestedUsers = async (req, res) => {
+    try {
+        const suggestedUsers = await User.find({ _id: { $ne: req.user._id } }).select("-password")
+
+        if (!suggestedUsers) {
+            return res.status(404).json({ error: "No suggested users found" });
+        }
+
+        res.status(200).json({ data: suggestedUsers, message: "Suggested users fetched successfully" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

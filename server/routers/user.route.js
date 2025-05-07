@@ -1,5 +1,5 @@
 import express from 'express';
-import { checkAuth, followOrUnfollow, getFollowerOrFollowing, login, logout, register, updateProfile } from '../controllers/user.controller.js';
+import { checkAuth, followOrUnfollow, getFollowerOrFollowing, getSuggestedUsers, login, logout, register, updateProfile } from '../controllers/user.controller.js';
 import upload from '../middlewares/upload.middleware.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
 
@@ -18,6 +18,8 @@ router.route("/update-profile").put(authMiddleware, upload.single('image'), upda
 router.route("/follow/:id").put(authMiddleware, followOrUnfollow)
 
 router.route("/follow-or-following").get(authMiddleware, getFollowerOrFollowing)
+
+router.route("/suggested").get(authMiddleware, getSuggestedUsers)
 
 export default router;
 

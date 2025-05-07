@@ -113,10 +113,10 @@ export default function Profile() {
                 </div>
                 {/* Stats */}
                 <div className="flex justify-center md:justify-start gap-6 mb-4">
-                  <div>
-                    <span className="font-bold">{totalPosts || 0}</span> posts
+                  <div className="flex gap-2">
+                    <span className="font-bold">{totalPosts || 0}</span>posts
                   </div>
-                  <div>
+                  <div className="flex gap-2">
                     <span className="font-bold">{user?.followers.length || 0}</span>
                     followers
                   </div>

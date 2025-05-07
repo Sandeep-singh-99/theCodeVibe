@@ -141,3 +141,22 @@ export const useGetFollowerOrFollowing = () => {
     },
   });
 }
+
+
+export const useGetSuggestedUsers = () => {
+  return useQuery({
+    queryKey: ["suggested-users"],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/suggested`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Get suggested users failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  });
+}

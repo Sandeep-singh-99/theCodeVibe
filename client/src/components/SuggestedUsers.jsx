@@ -1,51 +1,39 @@
-import React from "react";
-
-
-const suggestedUsers = [
-  {
-    username: "itz_sameer_khan_7",
-    description: "Suggested for you",
-    profilePic: "https://via.placeholder.com/40", 
-  },
-  {
-    username: "instagram",
-    description: "Popular",
-    profilePic: "https://via.placeholder.com/40",
-    verified: true,
-  },
-  {
-    username: "thakurakash.singh_3...",
-    description: "Followed by anurag_tiwari_01",
-    profilePic: "https://via.placeholder.com/40",
-  },
-  {
-    username: "rishabh_thakur_05",
-    description: "Followed by anurag_tiwari_01",
-    profilePic: "https://via.placeholder.com/40",
-  },
-  {
-    username: "kapilkaushik4",
-    description: "Followed by prsingh0310",
-    profilePic: "https://via.placeholder.com/40",
-  },
-];
+import React, { useEffect } from "react";
+import { useGetSuggestedUsers } from "../api/authApi";
+import { useDispatch, useSelector } from "react-redux";
+import { setSuggestedUsers } from "../redux/slice/authSlice";
 
 const SuggestedUsers = () => {
+  const { data: suggestedUsersFetch } = useGetSuggestedUsers();
+  const { suggestedUsers, user } = useSelector((state) => state.auth);
+
+  const disptach = useDispatch()
+
+  useEffect(() => {
+    if (suggestedUsersFetch?.data) {
+      disptach(setSuggestedUsers(suggestedUsersFetch.data))
+    }
+  })
+
   return (
-    <div className=" card bg-gray-900 text-white p-4 rounded-lg max-w-sm mx-auto">
+    <div className="card bg-black border border-base-300 text-white p-4 rounded-lg max-w-sm mx-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center space-x-2">
-          <div className="w-10 h-10 bg-gray-600 rounded-full"></div>
-          <span className="font-semibold">sandeep_necoder</span>
+          <div className="w-10 h-10 bg-gray-600 rounded-full">
+            <img
+            src={user.profilePic}
+            alt={`${user.username} profile`}
+            className="w-10 h-10 rounded-full border border-purple-900 object-cover"
+            />
+          </div>
+          <span className="font-semibold">{user.username}</span>
         </div>
-        <button className="text-blue-500 font-semibold">Switch</button>
       </div>
 
       {/* Suggested for you section */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-sm font-semibold text-gray-400">Suggested for you</h2>
-        <button className="text-blue-500 text-sm font-semibold">See All</button>
       </div>
 
       {/* User List */}
@@ -71,7 +59,7 @@ const SuggestedUsers = () => {
                     </svg>
                   )}
                 </div>
-                <p className="text-xs text-gray-400">{user.description}</p>
+                <p className="text-xs text-gray-400">{user.email}</p>
               </div>
             </div>
             <button className="text-blue-500 text-sm font-semibold">Follow</button>
@@ -81,11 +69,7 @@ const SuggestedUsers = () => {
 
       {/* Footer Links */}
       <div className="mt-6 text-xs text-gray-500">
-        <p>
-          About • Help • Press • API • Jobs • Privacy • Terms • Locations •
-          Language • Meta Verified
-        </p>
-        <p className="mt-2">© 2025 INSTAGRAM FROM META</p>
+        <p className="mt-2">© 2025 Insta developed by sandeep singh</p>
       </div>
     </div>
   );

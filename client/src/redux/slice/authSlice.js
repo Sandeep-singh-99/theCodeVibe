@@ -8,6 +8,7 @@ const authSlice = createSlice({
         loading: false,
         error: null,
         selectedUser: null,
+        suggestedUsers: []
     },
 
     reducers: {
@@ -22,6 +23,10 @@ const authSlice = createSlice({
 
         setError: (state, action) => {
             state.error = action.payload;
+        },
+
+        setSuggestedUsers: (state, action) => {
+            state.suggestedUsers = action.payload;
         },
 
         checkAuth: (state, action) => {
@@ -43,7 +48,7 @@ const authSlice = createSlice({
     }
 })
 
-export const { login, setLoading, setError, checkAuth, logout, setUpdateProfile, setSelectedUser } = authSlice.actions;
+export const { login, setLoading, setError, checkAuth, logout, setUpdateProfile, setSelectedUser, setSuggestedUsers } = authSlice.actions;
 
 export default authSlice.reducer;
 

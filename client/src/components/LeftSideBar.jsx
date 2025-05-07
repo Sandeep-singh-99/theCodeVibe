@@ -27,7 +27,7 @@ export default function LeftSideBar() {
           <h1 className="text-3xl font-bold hidden md:block">Insta</h1>
         </div>
 
-        <nav className="space-y-4 mt-4 w-full font-semibold">
+        <nav className="space-y-4 mt-4 w-full font-bold">
           <Link
             to={""}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full transition-colors lg:w-11/12"
