@@ -182,3 +182,11 @@ export const deletePost = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+
+export const trendingPosts = async (req, res) => {
+  try {
+    
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
