@@ -40,7 +40,7 @@ export default function PostCardComponents() {
   };
 
   return (
-    <div className="space-y-4 max-w-3xl mx-auto px-4">
+    <div className="space-y-8 max-w-3xl mx-auto px-4">
       {posts.map((post) => {
         const isFollowing = user?.following?.includes(post.userId._id) || false;
 
