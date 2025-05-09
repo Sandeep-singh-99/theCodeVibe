@@ -12,11 +12,15 @@ import {
   connectSocket,
   disconnectSocket,
 } from "./utils/socket";
+import { useGetAllBookmark } from "./api/bookmarkApi";
+import { getBookmarkPosts } from "./redux/slice/bookmarkSlice";
 
 export default function App() {
   const dispatch = useDispatch();
   const { data: authData, error: authError } = useCheckAuth();
   const { user } = useSelector((state) => state.auth);
+
+  const { data:bookmarkData } = useGetAllBookmark()
 
   // Handle authentication
   useEffect(() => {
@@ -29,7 +33,10 @@ export default function App() {
         setError(authError.response?.data?.message || authError.message)
       );
     }
-  }, [authData, authError, dispatch]);
+    if (bookmarkData?.data) {
+      dispatch(getBookmarkPosts(bookmarkData.data));
+    }
+  }, [authData, authError, dispatch, bookmarkData]);
 
   // Manage socket connection
   useEffect(() => {

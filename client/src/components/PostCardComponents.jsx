@@ -1,4 +1,3 @@
-import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 
@@ -47,7 +46,7 @@ export default function PostCardComponents() {
         return (
           <div
             key={post._id}
-            className="card bg-black shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-100 rounded-2xl overflow-hidden"
+            className="card bg-black shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-100 rounded-xl overflow-hidden"
           >
             <div className="p-6">
               {/* User Info */}
@@ -75,9 +74,9 @@ export default function PostCardComponents() {
                 {user?._id !== post.userId._id && (
                   <button
                     onClick={() => handleFollowToggle(post.userId._id)}
-                    className={`btn btn-sm ${
+                    className={`p-2 cursor-pointer rounded-lg border border-base-100 text-sm ${
                       isFollowing
-                        ? "bg-base-100"
+                        ? "bg-base-300"
                         : "bg-base-100"
                     } text-sm transition-all duration-200`}
                     disabled={isPending}
@@ -134,7 +133,7 @@ export default function PostCardComponents() {
               )}
 
               {/* Interaction Buttons */}
-              <div className="flex items-center gap-4">
+              <div className="flex justify-between items-center gap-4">
                 <button className="btn btn-ghost text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-200">
                   <Heart className="w-5 h-5" />
                   <span className="ml-1 text-sm">24</span>
@@ -158,3 +157,4 @@ export default function PostCardComponents() {
     </div>
   );
 }
+
