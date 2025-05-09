@@ -8,46 +8,63 @@ import EditProfile from "../pages/EditProfile";
 import BookMark from "../pages/BookMark";
 import Profile from "../pages/Profile";
 import Message from "../pages/Message";
+import ProtectedRoutes from "../components/ProtectedRoutes";
 
 const routers = createBrowserRouter([
-    {
-        path: "/",
-        element: <App/>,
-        children: [
-            {
-                path: "",
-                element: <Home/>
-            },
-            {
-                path: "signup",
-                element: <SignUp/>
-            },
-            {
-                path: "login",
-                element: <Login/>
-            },
-            {
-                path: "setting",
-                element: <Setting/>
-            },
-            {
-                path: "edit-profile",
-                element: <EditProfile/>
-            },
-            {
-                path: "bookmark",
-                element: <BookMark/>
-            },
-            {
-                path: "profile",
-                element: <Profile/>
-            },
-            {
-                path: "message",
-                element: <Message/>
-            }
-        ]
-    }
-])
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      {
+        path: "",
+        element: <Home />,
+      },
+      {
+        path: "signup",
+        element: <SignUp />,
+      },
+      {
+        path: "login",
+        element: <Login />,
+      },
+      {
+        path: "setting",
+        element: (
+          <ProtectedRoutes>
+            <Setting />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "edit-profile",
+        element: <ProtectedRoutes> <EditProfile /> </ProtectedRoutes> 
+      },
+      {
+        path: "bookmark",
+        element: (
+          <ProtectedRoutes>
+            <BookMark />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <ProtectedRoutes>
+            <Profile />
+          </ProtectedRoutes>
+        ),
+      },
+      {
+        path: "message",
+        element: (
+          <ProtectedRoutes>
+            <Message />
+          </ProtectedRoutes>
+        ),
+      },
+    ],
+  },
+]);
 
 export default routers;
