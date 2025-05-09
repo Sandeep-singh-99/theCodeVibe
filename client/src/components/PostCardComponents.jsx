@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { Heart, MessageCircle, Share2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, MoreVertical } from "lucide-react";
 import BookMarkBtnComponent from "./BookMarkBtnComponent";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
 
@@ -23,7 +23,7 @@ export default function PostCardComponents() {
         >
           <div className="p-6">
             {/* User Info */}
-            <div className="flex items-center gap-5 mb-5">
+            <div className="flex items-center justify-between mb-5">
               <div className="flex items-center space-x-4">
                 <div className="avatar">
                   <div className="w-12 h-12 rounded-full ring ring-primary/50 ring-offset-base-100 ring-offset-2 transition-transform hover:scale-105">
@@ -43,17 +43,34 @@ export default function PostCardComponents() {
                   </span>
                 </div>
               </div>
-              {/* Follow/Unfollow Button */}
+              {/* Dropdown Menu */}
               {user?._id !== post.userId._id && (
-                <FollowUnfollowButton
-                  userId={post.userId._id}
-                  className="p-2 rounded-lg border border-base-100 text-sm"
-                  btnClassName={`${
-                    user?.following?.includes(post.userId._id)
-                      ? "bg-base-100"
-                      : "bg-base-200"
-                  }`}
-                />
+                <div className="dropdown dropdown-end">
+                  <button
+                    tabIndex={0}
+                    className="btn btn-ghost btn-circle text-base-content/60 hover:text-primary hover:bg-primary/10"
+                  >
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                  <ul
+                    tabIndex={0}
+                    className="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-52"
+                  >
+                    <li>
+                      <FollowUnfollowButton
+                        userId={post.userId._id}
+                        className="text-sm font-semibold justify-start"
+                        btnClassName={`${
+                          user?.following?.some(
+                            (followedUser) => followedUser._id === post.userId._id
+                          )
+                            ? "bg-base-100"
+                            : "bg-base-200"
+                        } w-full text-left`}
+                      />
+                    </li>
+                  </ul>
+                </div>
               )}
             </div>
 
