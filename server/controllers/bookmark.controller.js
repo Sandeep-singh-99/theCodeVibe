@@ -47,3 +47,24 @@ export const getBookmarks = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+export const deleteBookmark = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    const bookmark = await Bookmark.findOneAndDelete({ _id: id, userId });
+
+    if (!bookmark) {
+      return res.status(404).json({ error: "Bookmark not found" });
+    }
+
+    res.status(200).json({ message: "Bookmark deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

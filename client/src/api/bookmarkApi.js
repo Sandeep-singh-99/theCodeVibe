@@ -33,3 +33,21 @@ export const useGetAllBookmark = () => {
     },
   });
 };
+
+export const useDeleteBookmark = () => {
+  return useMutation({
+    mutationFn: async (id) => {
+      const response = await axios.delete(
+        `${API_URL}/delete-bookmark/${id}`,
+        { withCredentials: true }
+      );
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Delete bookmark failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  });
+}

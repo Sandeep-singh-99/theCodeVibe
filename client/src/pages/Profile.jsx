@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 import { useGetPostByUser, useGetTotalPosts } from "../api/postApi";
 import { setPostsUserId, setTotalPosts } from "../redux/slice/postSlice";
 import PostContentComponent from "../components/PostContentComponent";
-import { useGetFollowerOrFollowing } from "../api/authApi";
-import { setUpdateProfile } from "../redux/slice/authSlice";
 
 export default function Profile() {
   const { user } = useSelector((state) => state.auth);
@@ -13,8 +11,6 @@ export default function Profile() {
   const { data: totalPost } = useGetTotalPosts();
 
   const { data: postByUser } = useGetPostByUser();
-
-  const { data: FollowOrFollowing } = useGetFollowerOrFollowing()
 
   const dispatch = useDispatch();
 
@@ -28,13 +24,7 @@ export default function Profile() {
     if (postByUser?.data) {
       dispatch(setPostsUserId(postByUser.data));
     }
-
-    if (FollowOrFollowing?.data) {
-      console.log("FollowOrFollowing", FollowOrFollowing?.data);
-      
-      dispatch(setUpdateProfile( FollowOrFollowing?.data )); 
-    }
-  }, [totalPost, postByUser, FollowOrFollowing, dispatch]);
+  }, [totalPost, postByUser, dispatch]);
 
   const FollowersContent = () => (
     <div className="p-4">
