@@ -1,39 +1,19 @@
 import React, { useEffect } from "react";
-import { useFollowOrUnfollow, useGetSuggestedUsers } from "../api/authApi";
+import { useGetSuggestedUsers } from "../api/authApi";
 import { useDispatch, useSelector } from "react-redux";
-import { setSuggestedUsers, setUpdateProfile } from "../redux/slice/authSlice";
-import toast from "react-hot-toast";
+import { setSuggestedUsers } from "../redux/slice/authSlice";
+import FollowUnfollowButton from "./FollowUnFollowBtn";
 
 const SuggestedUsers = () => {
   const { data: suggestedUsersFetch } = useGetSuggestedUsers();
   const { suggestedUsers, user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
-  const { mutate: followOrUnfollow, isPending } = useFollowOrUnfollow({
-    onSuccess: (data) => {
-      dispatch(setUpdateProfile(data.updatedUser));
-      toast.success(data?.message || "Follow status updated");
-    },
-    onError: (err) => {
-      dispatch(setUpdateProfile(user));
-      toast.error(err?.message || "Failed to update follow status");
-    },
-  });
-
   useEffect(() => {
     if (suggestedUsersFetch?.data) {
       dispatch(setSuggestedUsers(suggestedUsersFetch.data));
     }
   }, [suggestedUsersFetch, dispatch]);
-
-  const handleFollowToggle = (userId) => {
-    const isCurrentlyFollowing = user.following.includes(userId);
-    const updatedFollowing = isCurrentlyFollowing
-      ? user.following.filter((id) => id !== userId)
-      : [...user.following, userId];
-    dispatch(setUpdateProfile({ ...user, following: updatedFollowing }));
-    followOrUnfollow(userId);
-  };
 
   return (
     <div className="card bg-black border border-base-300 text-white p-4 rounded-lg max-w-sm mx-auto">
@@ -81,21 +61,10 @@ const SuggestedUsers = () => {
               </div>
             </div>
             {suggestedUser._id !== user._id && (
-              <button
-                onClick={() => handleFollowToggle(suggestedUser._id)}
-                className={`cursor-pointer ${
-                  user.following.includes(suggestedUser._id)
-                    ? "text-blue-500 text-lg font-semibold"
-                    : "text-gray-500 text-lg font-semibold"
-                } text-sm transition-all duration-200`}
-                disabled={isPending}
-              >
-                {isPending
-                  ? "Loading..."
-                  : user.following.includes(suggestedUser._id)
-                  ? "Unfollow"
-                  : "Follow"}
-              </button>
+              <FollowUnfollowButton
+                userId={suggestedUser._id}
+                className="text-sm font-semibold"
+              />
             )}
           </div>
         ))}

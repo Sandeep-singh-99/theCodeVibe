@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import LeftSideBar from "./components/LeftSideBar";
 import { useDispatch, useSelector } from "react-redux";
-import { checkAuth, setError } from "./redux/slice/authSlice";
+import { checkAuth, setError, setUpdateProfile } from "./redux/slice/authSlice";
 import toast, { Toaster } from "react-hot-toast";
-import { useCheckAuth } from "./api/authApi";
+import { useCheckAuth, useGetFollowerOrFollowing } from "./api/authApi";
 import { setOnlineUsers } from "./redux/slice/chatSlice";
 import { setSocketConnected } from "./redux/slice/socketSlice";
 import {
@@ -22,7 +22,8 @@ export default function App() {
 
   const { data:bookmarkData } = useGetAllBookmark()
 
-  // Handle authentication
+  const { data: FollowOrFollowing } = useGetFollowerOrFollowing()
+
   useEffect(() => {
     if (authData) {
       dispatch(checkAuth(authData.data));
@@ -36,7 +37,37 @@ export default function App() {
     if (bookmarkData?.data) {
       dispatch(getBookmarkPosts(bookmarkData.data));
     }
-  }, [authData, authError, dispatch, bookmarkData]);
+
+    if (FollowOrFollowing?.data) {
+      // const followingIds = FollowOrFollowing.data.following?.map((user) => user._id) || [];
+      // const followerIds = FollowOrFollowing.data.followers?.map((user) => user._id) || [];
+      // dispatch(
+      //   setUpdateProfile({
+      //     ...user,
+      //     followers: followerIds,
+      //     following: followingIds,
+      //   })
+      // );
+
+       const following = FollowOrFollowing.data.following?.map((user) => ({
+        _id: user._id,
+        username: user.username,
+        profilePic: user.profilePic,
+      })) || [];
+      const followers = FollowOrFollowing.data.followers?.map((user) => ({
+        _id: user._id,
+        username: user.username,
+        profilePic: user.profilePic,
+      })) || [];
+      dispatch(
+        setUpdateProfile({
+          ...user,
+          followers,
+          following,
+        })
+      );
+    }
+  }, [authData, authError, dispatch, FollowOrFollowing, bookmarkData]);
 
   // Manage socket connection
   useEffect(() => {
