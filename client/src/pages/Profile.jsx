@@ -15,7 +15,7 @@ export default function Profile() {
   const dispatch = useDispatch();
 
   // State for active tab
-  const [activeTab, setActiveTab] = useState("following");
+  const [activeTab, setActiveTab] = useState("posts");
 
   useEffect(() => {
     if (totalPost?.data) {
