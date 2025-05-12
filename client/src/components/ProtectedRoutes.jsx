@@ -10,7 +10,7 @@ export default function ProtectedRoutes({children}) {
         if (!user) {
             navigate('/login');
         }
-    },[])
+    },[navigate, user]);
   return (
     <div>{children}</div>
   )
