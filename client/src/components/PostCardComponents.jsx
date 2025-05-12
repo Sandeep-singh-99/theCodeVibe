@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Heart, MessageCircle, Share2, MoreVertical } from "lucide-react";
 import BookMarkBtnComponent from "./BookMarkBtnComponent";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
+import { Link } from "react-router-dom";
 
 export default function PostCardComponents() {
   const { posts } = useSelector((state) => state.posts);
@@ -122,10 +123,10 @@ export default function PostCardComponents() {
                 <Heart className="w-5 h-5" />
                 <span className="ml-1 text-sm">24</span>
               </button>
-              <button className="btn btn-ghost btn-circle text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-200">
+              <Link to={`postView/${post._id}`} className="btn btn-ghost btn-circle text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-200">
                 <MessageCircle className="w-5 h-5" />
                 <span className="ml-1 text-sm">8</span>
-              </button>
+              </Link>
               <button className="btn btn-ghost btn-circle text-base-content/60 hover:text-secondary hover:bg-secondary/10 transition-all duration-200">
                 <Share2 className="w-5 h-5" />
                 <span className="ml-1 text-sm">3</span>

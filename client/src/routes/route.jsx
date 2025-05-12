@@ -9,6 +9,7 @@ import BookMark from "../pages/BookMark";
 import Profile from "../pages/Profile";
 import Message from "../pages/Message";
 import ProtectedRoutes from "../components/ProtectedRoutes";
+import PostView from "../pages/PostView";
 
 const routers = createBrowserRouter([
   {
@@ -63,6 +64,14 @@ const routers = createBrowserRouter([
           </ProtectedRoutes>
         ),
       },
+      {
+        path: "postView/:id",
+        element: (
+          <ProtectedRoutes>
+            <PostView/>
+          </ProtectedRoutes>
+        )
+      }
     ],
   },
 ]);

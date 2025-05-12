@@ -183,6 +183,30 @@ export const deletePost = async (req, res) => {
   }
 }
 
+export const getPostById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "Post ID is required" });
+    }
+
+    const post = await Post.findById(id)
+      .populate("userId", "username profilePic email");
+
+    if (!post) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    res.status(200).json({
+      data: post,
+      message: "Post fetched successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 export const trendingPosts = async (req, res) => {
   try {
     
