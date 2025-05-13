@@ -10,9 +10,10 @@ import userRoute from './routers/user.route.js'
 import postRoute from './routers/post.route.js';
 import bookmarkRoute from './routers/bookmark.route.js'
 import messageRoute from './routers/message.route.js'
+import commentRoute from './routers/comment.route.js'
 import { app, server } from './socket/socket.js'
 
-// const app = express();
+
 const PORT = process.env.PORT || 5001;
 
 app.use(cors({
@@ -22,13 +23,13 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('dev'));
-
-// app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/auth', userRoute)
 app.use('/api/post', postRoute)
 app.use('/api/bookmark', bookmarkRoute)
 app.use('/api/message', messageRoute)
+app.use('/api/comment', commentRoute)
 
 
 

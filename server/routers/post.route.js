@@ -21,6 +21,6 @@ router.route("/get-user-post").get(authMiddleware, getPostByUserId)
 
 router.route("/get-user-post-delete/:id").delete(authMiddleware, deletePost)
 
-router.route("/get-post/:id").get(authMiddleware, getPostById)
+router.route("/get-post/:id").get(getPostById)
 
 export default router;

@@ -66,11 +66,7 @@ const routers = createBrowserRouter([
       },
       {
         path: "postView/:id",
-        element: (
-          <ProtectedRoutes>
-            <PostView/>
-          </ProtectedRoutes>
-        )
+        element: <PostView/>
       }
     ],
   },

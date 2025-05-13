@@ -4,6 +4,7 @@ import postSlice from "./slice/postSlice";
 import bookmarkSlice from "./slice/bookmarkSlice";
 import chatSlice from "./slice/chatSlice";
 import SocketSlice from "./slice/socketSlice";
+import commentSlice from "./slice/commentSlice"
 
 import {
   persistReducer,
@@ -20,6 +21,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
+  blacklist: ["comment"],
 };
 
 const rootReducer = combineReducers({
@@ -28,18 +30,8 @@ const rootReducer = combineReducers({
   bookmark: bookmarkSlice,
   chat: chatSlice,
   socket: SocketSlice,
+  comment: commentSlice
 });
-
-// const store = configureStore({
-//   reducer: {
-//     auth: authSlice,
-//     posts: postSlice,
-//     bookmark: bookmarkSlice,
-//     chat: chatSlice,
-//     socket: SocketSlice,
-//   },
-// });
-
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useGetPostById } from '../api/postApi';
@@ -7,6 +7,8 @@ import { Heart, MessageCircle, Share2, MoreVertical } from 'lucide-react';
 import BookMarkBtnComponent from '../components/BookMarkBtnComponent';
 import FollowUnfollowButton from '../components/FollowUnFollowBtn';
 import CommentSection from '../components/CommentSection';
+import { useGetComment } from '../api/commentApi';
+import { clearComments, getComments } from '../redux/slice/commentSlice';
 
 
 export default function PostView() {
@@ -17,11 +19,20 @@ export default function PostView() {
   const { user } = useSelector((state) => state.auth);
   const { data: post, isLoading: queryLoading, error: queryError } = useGetPostById(id);
 
+  const { data: postComment } = useGetComment(id)
+
+  useEffect(() => {
+    dispatch(clearComments())
+  },[id, dispatch])
+
   useEffect(() => {
     if (post) {
       dispatch(setPostById(post.data));
     }
-  }, [post, dispatch]);
+    if (postComment) {
+      dispatch(getComments(postComment.data));
+    }
+  }, [post, postComment, dispatch]);
 
   useEffect(() => {
     if (queryError?.response?.status === 404) {
