@@ -39,9 +39,9 @@ export default function Login() {
       navigate("/")
     }
     if (loginMutation.isError) {
-      toast.error(loginMutation.error.response?.data?.message || loginMutation.error.message)
+      toast.error(loginMutation.error.response?.data?.error || loginMutation.error.message)
     }
-  })
+  },[dispatch, loginMutation.isSuccess, loginMutation.isError, loginMutation.data, loginMutation.error, navigate])
   return (
     <main className="flex justify-center items-center min-h-screen">
       <div className="w-96 p-6 border border-gray-700 rounded-xl shadow-2xl">
@@ -96,9 +96,14 @@ export default function Login() {
           </div>
 
           <button
-            className="w-full bg-white text-black font-semibold py-2 rounded-md mt-6 cursor-pointer"
+          disabled={loginMutation.isPending}
+           className={`w-full cursor-pointer font-semibold py-2 rounded-md mt-6 transition-colors ${
+              loginMutation.isPending
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-white text-black hover:bg-gray-200"
+            }`}
           >
-            Log In
+            {loginMutation.isPending ? "Logging in..." : "Log In"}
           </button>
         </form>
 

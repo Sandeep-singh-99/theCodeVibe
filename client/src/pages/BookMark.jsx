@@ -101,7 +101,7 @@ export default function BookMark() {
                   </div>
 
                   <p className="text-gray-700 dark:text-white mb-6 leading-relaxed font-semibold">
-                    {post.content || "No text content."}
+                    {post.content}
                   </p>
 
                   {post.imagePic?.length > 0 && (

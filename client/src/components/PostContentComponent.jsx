@@ -18,12 +18,18 @@ const PostContentComponent = () => {
   const { mutate: deletePost } = useDeletePost();
 
   const [expandedPosts, setExpandedPosts] = useState({});
+  const [isDeleteLoading, setIsDeleteLoading] = useState(null);
 
   const handleDelete = (postId) => {
+    setIsDeleteLoading(postId);
     deletePost(postId, {
       onSuccess: () => {
         dispatch(setDeletePost(postId));
+        setIsDeleteLoading(null);
       },
+      onError: (error) => {
+        setIsDeleteLoading(null);
+      }
     });
   };
 
@@ -152,11 +158,16 @@ const PostContentComponent = () => {
                       <button
                         className="btn btn-sm btn-error text-white"
                         onClick={() => handleDelete(post._id)}
+                        disabled={isDeleteLoading === post._id}
                         aria-label={`Delete post by ${
                           post.userId?.username || "user"
                         }`}
                       >
-                        Delete
+                        {isDeleteLoading === post._id ? (
+                          <span className="loading loading-spinner loading-sm"></span>
+                        ): (
+                          "Delete"
+                        )}
                       </button>
                     </li>
                   </ul>

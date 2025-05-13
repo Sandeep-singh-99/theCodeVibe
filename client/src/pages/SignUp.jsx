@@ -154,12 +154,15 @@ export default function SignUp() {
               </button>
             </div>
           </div>
-
           <button
-            type="submit"
-            className="w-full bg-white text-black font-semibold py-2 rounded-md mt-6 cursor-pointer"
+          disabled={signUpMutation.isPending}
+           className={`w-full cursor-pointer font-semibold py-2 rounded-md mt-6 transition-colors ${
+              signUpMutation.isPending
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-white text-black hover:bg-gray-200"
+            }`}
           >
-            Sign Up
+            {signUpMutation.isPending ? "Sign up..." : "Sign Up"}
           </button>
         </form>
       </div>
