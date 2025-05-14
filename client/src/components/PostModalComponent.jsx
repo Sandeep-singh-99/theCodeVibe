@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { createPortal } from "react-dom"; 
+import { createPortal } from "react-dom";
 import { ImageMinus, VideoOff, X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { useCreatePost } from "../api/postApi";
 import { addPost } from "../redux/slice/postSlice";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 export default function PostModalComponent({ isOpen, onClose }) {
   const [postContent, setPostContent] = useState("");
   const [mediaFile, setMediaFile] = useState(null);
   const [mediaPreview, setMediaPreview] = useState(null);
   const [postData, setPostData] = useState(null);
-  const maxLength = 280;
-  const maxFileSize = 50 * 1024 * 1024;
+  const maxFileSize = 50 * 1024 * 1024; 
 
   const { user } = useSelector((state) => state.auth);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const {
     mutate: createPost,
     isPending,
@@ -24,19 +25,18 @@ export default function PostModalComponent({ isOpen, onClose }) {
   } = useCreatePost();
 
   const handlePost = () => {
-    if (!postContent.trim() && !mediaFile) {
-      alert("Please provide content or select an image/video.");
+    const strippedContent = postContent.replace(/<(.|\n)*?>/g, "").trim();
+    if (!strippedContent && !mediaFile) {
+      alert("Please add some content or media to share.");
       return;
     }
 
     const formData = new FormData();
-    if (postContent.trim()) {
+    if (strippedContent) {
       formData.append("content", postContent);
     }
     if (mediaFile) {
-      const fieldName = mediaFile.type.startsWith("video/")
-        ? "videos"
-        : "images";
+      const fieldName = mediaFile.type.startsWith("video/") ? "videos" : "images";
       formData.append(fieldName, mediaFile);
     }
 
@@ -47,28 +47,25 @@ export default function PostModalComponent({ isOpen, onClose }) {
         setPostContent("");
         setMediaFile(null);
         setMediaPreview(null);
-        setTimeout(onClose, 2000);
+        setTimeout(onClose, 1500);
       },
       onError: (error) => {
-        console.error(
-          "Error creating post:",
-          error.response?.data,
-          error.message
-        );
+        console.error("Error creating post:", error.response?.data || error.message);
       },
     });
   };
+
 
   const handleMediaChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const allowedTypes = ["image/jpeg", "image/png", "video/mp4"];
       if (!allowedTypes.includes(file.type)) {
-        alert("Only JPEG, PNG, or MP4 files are allowed.");
+        alert("Please select a JPEG, PNG, or MP4 file.");
         return;
       }
       if (file.size > maxFileSize) {
-        alert("File is too large. Maximum size is 50MB.");
+        alert("File size exceeds 50MB limit.");
         return;
       }
       setMediaFile(file);
@@ -98,146 +95,140 @@ export default function PostModalComponent({ isOpen, onClose }) {
 
   return createPortal(
     <dialog
-      id="post_modal"
-      className="modal fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50"
+    id="post_modal"
+      className="fixed modal inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm"
       open={isOpen}
       onClick={handleOverlayClick}
-      aria-labelledby="post_modal_title"
-    >
-      <div className="modal-box bg-base-300 shadow-2xl/100 shadow-gray-400 border border-gray-400 text-white w-full max-w-xl rounded-lg">
-        <div className="flex items-center">
+    > 
+     {/* w-full max-w-2xl rounded-2xl bg-white shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto */}
+      <div className="modal-box bg-white shadow-2xl/100 shadow-gray-400 border border-gray-400 text-white w-full max-w-2xl rounded-lg">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold text-gray-900">Create a post</h3>
           <button
             onClick={onClose}
-            className="text-white text-xl cursor-pointer"
+            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            aria-label="Close modal"
           >
-            <X />
+            <X className="w-5 h-5 text-gray-600" />
           </button>
         </div>
 
-        <div className="flex mt-4">
-          <div className="flex-shrink-0">
-            <img
-              src={user?.profilePic}
-              alt="User Avatar"
-              className="w-10 h-10 rounded-full border-2 border-blue-400 object-cover cursor-pointer hover:border-blue-600 transition-colors"
-            />
-          </div>
-
-          <div className="flex-1 ml-3">
-            <textarea
-              className="w-full bg-transparent text-white placeholder-gray-500 focus:outline-none resize-none"
-              placeholder="What's happening?"
-              rows="5"
-              maxLength={maxLength}
+        {/* User Info */}
+        <div className="flex items-start gap-3">
+          <img
+            src={user?.profilePic || "/default-avatar.png"}
+            alt="User avatar"
+            className="w-12 h-12 rounded-full object-cover border border-gray-200"
+          />
+          <div className="flex-1">
+            {/* <p className="text-sm font-medium text-gray-900">{user?.username || "User"}</p> */}
+            <ReactQuill
               value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
-              aria-label="Post content"
-            ></textarea>
-
-            {mediaPreview && (
-              <div className="mt-2">
-                {mediaFile?.type.startsWith("video/") ? (
-                  <video
-                    src={mediaPreview}
-                    controls
-                    className="max-w-full h-auto rounded-md"
-                    aria-label="Selected video preview"
-                  />
-                ) : (
-                  <img
-                    src={mediaPreview}
-                    alt="Selected image preview"
-                    className="max-w-full h-auto rounded-md"
-                  />
-                )}
-                <button
-                  className="text-red-500 text-sm mt-1 cursor-pointer"
-                  onClick={() => {
-                    setMediaFile(null);
-                    setMediaPreview(null);
-                  }}
-                >
-                  Remove
-                </button>
-              </div>
-            )}
-
-            {isPending && (
-              <p className="text-gray-500 text-sm mt-2">Posting...</p>
-            )}
-            {isError && (
-              <p className="text-red-500 text-sm mt-2">
-                {error?.response?.data?.error || "Failed to create post."}
-              </p>
-            )}
-            {isSuccess && (
-              <div className="text-green-500 text-sm mt-2">
-                <p>Post created successfully!</p>
-                {postData?.imagePic?.map((url, index) => (
-                  <a
-                    key={index}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline"
-                  >
-                    View Image {index + 1}
-                  </a>
-                ))}
-                {postData?.videos?.map((url, index) => (
-                  <a
-                    key={index}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 underline"
-                  >
-                    View Video {index + 1}
-                  </a>
-                ))}
-              </div>
-            )}
+              onChange={setPostContent}
+              theme="snow"
+              placeholder="What's on your mind?"
+              className="border-none text-gray-900"
+              style={{ minHeight: "120px" }}
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, false] }],
+                  ["bold", "italic", "underline"],
+                  ["blockquote", "code-block"],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link"],
+                ],
+              }}
+              formats={{
+                header: ["header"],
+                bold: ["bold"],
+                italic: ["italic"],
+                underline: ["underline"],
+                blockquote: ["blockquote"],
+                "code-block": ["code-block"],
+                list: ["list"],
+                link: ["link"],
+                "ordered": ["ordered"],
+                "bullet": ["bullet"],
+              }}
+            />
           </div>
         </div>
 
-        <div className="flex justify-between items-center mt-4 border-t border-gray-700 pt-2">
-          <div className="flex space-x-3">
-            <label className="cursor-pointer">
+        {/* Media Preview */}
+        {mediaPreview && (
+          <div className="mt-4 relative">
+            {mediaFile?.type.startsWith("video/") ? (
+              <video
+                src={mediaPreview}
+                controls
+                className="w-full max-h-96 rounded-lg object-contain bg-gray-100"
+              />
+            ) : (
+              <img
+                src={mediaPreview}
+                alt="Media preview"
+                className="w-full max-h-96 rounded-lg object-contain bg-gray-100"
+              />
+            )}
+            <button
+              onClick={() => {
+                setMediaFile(null);
+                setMediaPreview(null);
+              }}
+              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+              aria-label="Remove media"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* Status Messages */}
+        {isPending && <p className="text-sm text-gray-500 mt-3">Sharing your post...</p>}
+        {isError && (
+          <p className="text-sm text-red-500 mt-3">
+            {error?.response?.data?.error || "Something went wrong. Please try again."}
+          </p>
+        )}
+        {isSuccess && (
+          <p className="text-sm text-green-500 mt-3">Post shared successfully!</p>
+        )}
+
+        {/* Footer */}
+        <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+          <div className="flex gap-3">
+            <label className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors">
               <input
                 type="file"
                 accept="image/jpeg,image/png"
                 className="hidden"
                 onChange={handleMediaChange}
-                aria-label="Upload image"
               />
-              <ImageMinus className="text-blue-400" />
+              <ImageMinus className="w-5 h-5 text-blue-500" />
             </label>
-            <label className="cursor-pointer">
+            <label className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors">
               <input
                 type="file"
                 accept="video/mp4"
                 className="hidden"
                 onChange={handleMediaChange}
-                aria-label="Upload video"
               />
-              <VideoOff className="text-blue-400" />
+              <VideoOff className="w-5 h-5 text-blue-500" />
             </label>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="text-sm text-gray-500">
-              {postContent.length}/{maxLength}
-            </span>
+          <div>
             <button
-              className="btn bg-gray-600 text-white rounded-full px-4 py-1 disabled:opacity-50"
-              onClick={handlePost}
-              disabled={(!postContent.trim() && !mediaFile) || isPending}
-            >
-              {isPending ? "Posting..." : "Post"}
-            </button>
+            onClick={handlePost}
+            disabled={(!postContent.replace(/<(.|\n)*?>/g, "").trim() && !mediaFile) || isPending}
+            className="px-4 py-2 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+          >
+            {isPending ? "Sharing..." : "Share"}
+          </button>
           </div>
         </div>
       </div>
     </dialog>,
-    document.body 
+    document.body
   );
 }

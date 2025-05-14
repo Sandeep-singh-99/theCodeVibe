@@ -3,6 +3,8 @@ import { Heart, MessageCircle, Share2, MoreVertical } from "lucide-react";
 import BookMarkBtnComponent from "./BookMarkBtnComponent";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
 import { Link } from "react-router-dom";
+import DOMPurify from "dompurify";
+import parse from 'html-react-parser';
 
 export default function PostCardComponents() {
   const { posts } = useSelector((state) => state.posts);
@@ -11,133 +13,183 @@ export default function PostCardComponents() {
   // Handle empty posts
   if (!posts || posts.length === 0) {
     return (
-      <div className="text-base-content/60 text-center">No posts available</div>
+      <div className="text-gray-500 text-center py-8">No posts to show</div>
     );
   }
 
+  
   return (
-    <div className="space-y-8 max-w-3xl mx-auto px-4">
+    <div className="space-y-6 max-w-2xl mx-auto px-4">
       {posts.map((post) => (
-        <div
-          key={post._id}
-          className="card bg-black shadow-xl hover:shadow-2xl transition-all duration-300 border border-base-100 rounded-xl overflow-hidden"
-        >
-          <div className="p-6">
-            {/* User Info */}
-            <div className="flex items-center justify-between mb-5">
-              <div className="flex items-center space-x-4">
-                <div className="avatar">
-                  <div className="w-12 h-12 rounded-full ring ring-primary/50 ring-offset-base-100 ring-offset-2 transition-transform hover:scale-105">
-                    <img
-                      src={post.userId.profilePic}
-                      alt="Profile"
-                      className="object-cover rounded-full"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <span className="font-semibold text-lg text-base-content">
-                    {post.userId.username}
-                  </span>
-                  <span className="text-xs text-base-content/50 block">
-                    {new Date(post.createdAt).toLocaleString()}
-                  </span>
-                </div>
-              </div>
-              {/* Dropdown Menu */}
-              {user?._id !== post.userId._id && (
-                <div className="dropdown dropdown-end">
-                  <button
-                    tabIndex={0}
-                    className="btn btn-ghost btn-circle text-base-content/60 hover:text-primary hover:bg-primary/10"
-                  >
-                    <MoreVertical className="w-5 h-5" />
-                  </button>
-                  <ul
-                    tabIndex={0}
-                    className="dropdown-content menu p-2 shadow bg-base-200 rounded-box w-52"
-                  >
-                    <li>
-                      <FollowUnfollowButton
-                        userId={post.userId._id}
-                        className="text-sm font-semibold justify-start"
-                        btnClassName={`${
-                          user?.following?.some(
-                            (followedUser) => followedUser._id === post.userId._id
-                          )
-                            ? "bg-base-100"
-                            : "bg-base-200"
-                        } w-full text-left`}
-                      />
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* Media: Images and Videos */}
-            {(post.imagePic.length > 0 || post.videos.length > 0) && (
-              <div className="">
-                <div className="carousel rounded-xl w-full h-[400px] relative overflow-hidden">
-                  {[...post.imagePic, ...post.videos].map((media, index) => (
-                    <div
-                      key={`${post._id}-media-${index}`}
-                      className="carousel-item w-full relative"
-                    >
-                      {media.includes("video") || media.endsWith(".mp4") ? (
-                        <video
-                          controls
-                          className="w-full h-[400px] object-contain rounded-xl transition-transform duration-300 hover:scale-[1.02]"
-                        >
-                          <source src={media} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
-                      ) : (
-                        <img
-                          src={media}
-                          alt={`Post media ${index + 1}`}
-                          className="w-full h-[400px] object-contain rounded-xl transition-transform duration-300 hover:scale-[1.02]"
-                        />
-                      )}
-                      {[...post.imagePic, ...post.videos].length > 1 && (
-                        <div className="absolute top-3 right-3 badge badge-neutral badge-sm font-medium">
-                          {index + 1}/{[...post.imagePic, ...post.videos].length}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Content */}
-            {post.content && (
-              <p className="text-base-content/100 text-base font-serif leading-relaxed mb-3 font-light tracking-wide">
-                {post.content}
-              </p>
-            )}
-
-            {/* Interaction Buttons */}
-            <div className="flex justify-between items-center gap-4">
-              <button className="btn btn-ghost text-base-content/60 hover:text-error hover:bg-error/10 transition-all duration-200">
-                <Heart className="w-5 h-5" />
-                <span className="ml-1 text-sm">24</span>
-              </button>
-              <Link to={`postView/${post._id}`} className="btn btn-ghost btn-circle text-base-content/60 hover:text-primary hover:bg-primary/10 transition-all duration-200">
-                <MessageCircle className="w-5 h-5" />
-                <span className="ml-1 text-sm">8</span>
-              </Link>
-              <button className="btn btn-ghost btn-circle text-base-content/60 hover:text-secondary hover:bg-secondary/10 transition-all duration-200">
-                <Share2 className="w-5 h-5" />
-                <span className="ml-1 text-sm">3</span>
-              </button>
-              <div>
-                <BookMarkBtnComponent id={post._id} />
-              </div>
-            </div>
-          </div>
-        </div>
+        <PostCard key={post._id} post={post} user={user} />
       ))}
     </div>
   );
 }
+
+function PostCard({ post, user }) {
+
+   const customParser = (html) => {
+    const sanitizedHtml = DOMPurify.sanitize(html); 
+    return parse(sanitizedHtml, {
+      replace: (domNode) => {
+        if (domNode.name === 'iframe') {
+          return (
+            <iframe
+              src={domNode.attribs.src}
+              width="100%"
+              height="400"
+              title="Iframe Content"
+              frameBorder="0"
+            />
+          );
+        }
+        if (domNode.name === 'script') {
+          // Skip script tags
+          return null;
+        }
+        return null;
+      },
+    });
+  };
+
+
+  return (
+    <div className="rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-base-100 overflow-hidden">
+      <div className="p-5">
+        {/* User Info */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="avatar">
+              <div className="w-10 h-10 rounded-full ring ring-blue-100 ring-offset-2 transition-transform hover:scale-105">
+                <img
+                  src={post.userId.profilePic || "/default-avatar.png"}
+                  alt={`${post.userId.username}'s avatar`}
+                  className="object-cover rounded-full"
+                />
+              </div>
+            </div>
+            <div>
+              <Link
+                to={`/profile/${post.userId._id}`}
+                className="font-semibold text-base-content"
+              >
+                {post.userId.username}
+              </Link>
+              <span className="text-xs text-gray-500 block">
+                {new Date(post.createdAt).toLocaleString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  hour: "numeric",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
+              </span>
+            </div>
+          </div>
+          {/* Dropdown Menu */}
+          {user?._id !== post.userId._id && (
+            <div className="dropdown dropdown-end">
+              <button
+                tabIndex={0}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                aria-label="More options"
+              >
+                <MoreVertical className="w-5 h-5 text-gray-500" />
+              </button>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu p-2 shadow bg-white rounded-lg w-48 border border-gray-100"
+              >
+                <li>
+                  <FollowUnfollowButton
+                    userId={post.userId._id}
+                    className="text-sm font-medium text-gray-700 hover:bg-gray-50 w-full text-left"
+                    btnClassName={`w-full text-left ${
+                      user?.following?.some(
+                        (followedUser) => followedUser._id === post.userId._id
+                      )
+                        ? "text-gray-500"
+                        : "text-blue-500"
+                    }`}
+                  />
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
+
+        {/* Media: Images and Videos */}
+        {(post.imagePic.length > 0 || post.videos.length > 0) && (
+          <div className="mb-4">
+            <div className="carousel rounded-lg w-full h-80 relative overflow-hidden bg-gray-50">
+              {[...post.imagePic, ...post.videos].map((media, index) => (
+                <div
+                  key={`${post._id}-media-${index}`}
+                  className="carousel-item w-full"
+                >
+                  {media.includes("video") || media.endsWith(".mp4") ? (
+                    <video
+                      controls
+                      className="w-full h-80 object-contain rounded-lg"
+                    >
+                      <source src={media} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <img
+                      src={media}
+                      alt={`Post media ${index + 1}`}
+                      className="w-full h-80 object-contain rounded-lg"
+                    />
+                  )}
+                  {[...post.imagePic, ...post.videos].length > 1 && (
+                    <div className="absolute top-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full">
+                      {index + 1}/{[...post.imagePic, ...post.videos].length}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {post.content && (
+           <div className="prose prose-sm max-w-none mb-4">
+          {customParser(post.content)}
+        </div>
+        )}
+
+        {/* Interaction Buttons */}
+        <div className="flex justify-between items-center gap-3 pt-3">
+          <button
+            className="flex items-center gap-1 text-gray-500 hover:text-red-500 hover:bg-red-50 px-3 py-1 rounded-full transition-colors"
+            aria-label="Like post"
+          >
+            <Heart className="w-5 h-5" />
+            <span className="text-sm">24</span>
+          </button>
+          <Link
+            to={`postView/${post._id}`}
+            className="flex items-center gap-1 text-gray-500 hover:text-blue-500 hover:bg-blue-50 px-3 py-1 rounded-full transition-colors"
+            aria-label="Comment on post"
+          >
+            <MessageCircle className="w-5 h-5" />
+            <span className="text-sm">8</span>
+          </Link>
+          <button
+            className="flex items-center gap-1 text-gray-500 hover:text-green-500 hover:bg-green-50 px-3 py-1 rounded-full transition-colors"
+            aria-label="Share post"
+          >
+            <Share2 className="w-5 h-5" />
+            <span className="text-sm">3</span>
+          </button>
+          <BookMarkBtnComponent id={post._id} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
