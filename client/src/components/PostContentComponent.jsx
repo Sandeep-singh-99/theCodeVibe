@@ -9,6 +9,8 @@ import {
 import { useDeletePost } from "../api/postApi";
 import { setDeletePost } from "../redux/slice/postSlice";
 import { useState } from "react";
+import DOMPurify from "dompurify";
+import parse from 'html-react-parser';
 
 const PostContentComponent = () => {
   const { postsUserId, isLoading, isError } = useSelector(
@@ -77,12 +79,36 @@ const PostContentComponent = () => {
     );
   }
 
+  const customParser = (html) => {
+    const sanitizedHtml = DOMPurify.sanitize(html); 
+    return parse(sanitizedHtml, {
+      replace: (domNode) => {
+        if (domNode.name === 'iframe') {
+          return (
+            <iframe
+              src={domNode.attribs.src}
+              width="100%"
+              height="400"
+              title="Iframe Content"
+              frameBorder="0"
+            />
+          );
+        }
+        if (domNode.name === 'script') {
+          // Skip script tags
+          return null;
+        }
+        return null;
+      },
+    });
+  };
+
   return (
     <div className="p-4 sm:p-6 lg:p-8  min-h-screen">
       <h3 className="text-2xl font-bold mb-6 text-white tracking-tight">
         Posts
       </h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {postsUserId.map((post) => {
           const isExpanded = expandedPosts[post._id];
 
@@ -175,9 +201,9 @@ const PostContentComponent = () => {
               </div>
               {/* Post Content */}
               <div className="p-4 flex-1">
-                <p className="text-white text-sm sm:text-base leading-relaxed">
-                  {displayContent}
-                </p>
+                <div className="text-white text-sm sm:text-base leading-relaxed">
+                  {customParser(displayContent)}
+                </div>
                 {isLongPost && (
                   <button
                     className="text-primary text-sm font-medium mt-2 hover:underline focus:outline-none focus:ring-2 focus:ring-primary"
