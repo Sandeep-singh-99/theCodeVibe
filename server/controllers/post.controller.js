@@ -207,6 +207,59 @@ export const getPostById = async (req, res) => {
   }
 }
 
+export const likePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id
+    
+    if (!id) {
+      return res.status(400).json({ error: "Post ID is required" });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ error: "Please login to like a post" });
+    }
+
+    const postLike = await Post.findById(id)
+    if (!postLike) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    await postLike.updateOne({ $addToSet: { likes: userId }})
+    await postLike.save()
+
+    res.status(200).json({ message: "Post liked successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export const dislikePost = async (req, res) => {
+  try {
+    const { id } = req.params
+    const userId = req.user._id
+
+    if (!id) {
+      return res.status(400).json({ error: "Post ID is required" });
+    }
+
+    if (!userId) {
+      return res.status(401).json({ error: "Please login to dislike a post" });
+    }
+
+    const postDislike = await Post.findById(id)
+    if (!postDislike) {
+      return res.status(404).json({ error: "Post not found" });
+    }
+
+    await postDislike.updateOne({ $pull: { likes: userId }})
+    await postDislike.save()
+    res.status(200).json({ message: "Post disliked successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 export const trendingPosts = async (req, res) => {
   try {
     

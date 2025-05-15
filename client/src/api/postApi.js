@@ -97,6 +97,40 @@ export const useDeletePost = () => {
   });
 };
 
+export const useLikePost = () => {
+  return useMutation({
+    mutationFn: async (id) => {
+      const response = await axios.get(`${API_URL}/like-post/${id}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Like post failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  })
+}
+
+export const useDislikePost = () => {
+  return useMutation({
+    mutationFn: async (id) => {
+      const response = await axios.get(`${API_URL}/dislike-post/${id}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Dislike post failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  })
+}
+
 export const useGetAllPost = () => {
   const dispatch = useDispatch();
 

@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Heart, MessageCircle, Share2, MoreVertical } from "lucide-react";
 import BookMarkBtnComponent from "./BookMarkBtnComponent";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
@@ -6,13 +6,17 @@ import { Link } from "react-router-dom";
 import DOMPurify from "dompurify";
 import parse from "html-react-parser";
 import ReactPlayer from "react-player";
+import { useDislikePost, useLikePost } from "../api/postApi";
+import { setPosts } from "../redux/slice/postSlice";
+import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function PostCardComponents() {
   const { posts } = useSelector((state) => state.posts);
   const { user } = useSelector((state) => state.auth);
 
-  // Handle empty posts
-  if (!posts || posts.length === 0) {
+  // Handle non-array or empty posts
+  if (!Array.isArray(posts) || posts.length === 0) {
     return (
       <div className="text-gray-500 text-center py-8">No posts to show</div>
     );
@@ -28,6 +32,67 @@ export default function PostCardComponents() {
 }
 
 function PostCard({ post, user }) {
+  const dispatch = useDispatch();
+  const { posts } = useSelector((state) => state.posts);
+  const queryClient = useQueryClient(); 
+  const { mutate: likePost } = useLikePost();
+  const { mutate: dislikePost } = useDislikePost();
+  const [isLiking, setIsLiking] = useState(false);
+
+  const isLiked = Array.isArray(post.likes) && post.likes.includes(user?._id);
+
+  const handleLikeClick = () => {
+    if (!user?._id) {
+      alert("Please log in to like or dislike posts.");
+      return;
+    }
+    if (isLiking) return;
+
+    setIsLiking(true);
+    const previousPosts = posts; 
+    const updatedPost = {
+      ...post,
+      likes: isLiked
+        ? (post.likes || []).filter((id) => id !== user._id)
+        : [...(post.likes || []), user._id],
+    };
+
+    // Optimistic update
+    dispatch(
+      setPosts(posts.map((p) => (p._id === post._id ? updatedPost : p)))
+    );
+
+    if (isLiked) {
+      dislikePost(post._id, {
+        onSuccess: (serverPost) => {
+          dispatch(
+            setPosts(posts.map((p) => (p._id === serverPost._id ? serverPost : p)))
+          );
+          queryClient.invalidateQueries(["posts"]);
+          setIsLiking(false);
+        },
+        onError: () => {
+          dispatch(setPosts(previousPosts));
+          setIsLiking(false);
+        },
+      });
+    } else {
+      likePost(post._id, {
+        onSuccess: (serverPost) => {
+          dispatch(
+            setPosts(posts.map((p) => (p._id === serverPost._id ? serverPost : p)))
+          );
+          queryClient.invalidateQueries(["posts"]);
+          setIsLiking(false);
+        },
+        onError: () => {
+          dispatch(setPosts(previousPosts));
+          setIsLiking(false);
+        },
+      });
+    }
+  };
+
   const customParser = (html) => {
     const sanitizedHtml = DOMPurify.sanitize(html);
     return parse(sanitizedHtml, {
@@ -44,7 +109,6 @@ function PostCard({ post, user }) {
           );
         }
         if (domNode.name === "script") {
-          // Skip script tags
           return null;
         }
         return null;
@@ -85,7 +149,6 @@ function PostCard({ post, user }) {
               </span>
             </div>
           </div>
-          {/* Dropdown Menu */}
           {user?._id !== post.userId._id && (
             <div className="dropdown dropdown-end">
               <button
@@ -127,19 +190,17 @@ function PostCard({ post, user }) {
                   className="carousel-item w-full"
                 >
                   {media.includes("video") || media.endsWith(".mp4") ? (
-                    <>
-                      <ReactPlayer
-                        key={media}
-                        url={media}
-                        controls
-                        width="100%"
-                        height="100%"
-                        config={{
-                          youtube: { playerVars: { showinfo: 1 } },
-                          file: { attributes: { controlsList: "nodownload" } },
-                        }}
-                      />
-                    </>
+                    <ReactPlayer
+                      key={media}
+                      url={media}
+                      controls
+                      width="100%"
+                      height="100%"
+                      config={{
+                        youtube: { playerVars: { showinfo: 1 } },
+                        file: { attributes: { controlsList: "nodownload" } },
+                      }}
+                    />
                   ) : (
                     <img
                       src={media}
@@ -167,11 +228,17 @@ function PostCard({ post, user }) {
         {/* Interaction Buttons */}
         <div className="flex justify-between items-center gap-3 pt-3">
           <button
-            className="flex items-center gap-1 text-gray-500 hover:text-red-500 hover:bg-red-50 px-3 py-1 rounded-full transition-colors"
+            className={`flex items-center gap-1 ${
+              isLiked
+                ? "text-red-500 bg-red-50"
+                : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+            } px-3 py-1 rounded-full transition-colors ${isLiking ? "opacity-50" : ""}`}
+            onClick={handleLikeClick}
+            disabled={isLiking}
             aria-label="Like post"
           >
-            <Heart className="w-5 h-5" />
-            <span className="text-sm">24</span>
+            <Heart className="w-5 h-5" fill={isLiked ? "currentColor" : "none"} />
+            <span className="text-sm">{post.likes?.length || 0}</span>
           </button>
           <Link
             to={`postView/${post._id}`}
