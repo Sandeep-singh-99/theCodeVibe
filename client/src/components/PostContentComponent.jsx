@@ -201,7 +201,7 @@ const PostContentComponent = () => {
               </div>
               {/* Post Content */}
               <div className="p-4 flex-1">
-                <div className="text-white text-sm sm:text-base leading-relaxed">
+                <div className="prose prose-xs max-w-none mb-4">
                   {customParser(displayContent)}
                 </div>
                 {isLongPost && (
