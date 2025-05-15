@@ -242,6 +242,7 @@ const PostContentComponent = () => {
                   aria-label="Like post"
                 >
                   <Heart className="w-4 h-4" />
+                  <span className="text-sm">{post.likes?.length || 0}</span>
                   <span>Like</span>
                 </button>
                 <button
