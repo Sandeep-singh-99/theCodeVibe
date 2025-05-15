@@ -4,7 +4,8 @@ import BookMarkBtnComponent from "./BookMarkBtnComponent";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
 import { Link } from "react-router-dom";
 import DOMPurify from "dompurify";
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
+import ReactPlayer from "react-player";
 
 export default function PostCardComponents() {
   const { posts } = useSelector((state) => state.posts);
@@ -17,7 +18,6 @@ export default function PostCardComponents() {
     );
   }
 
-  
   return (
     <div className="space-y-6 max-w-2xl mx-auto px-4">
       {posts.map((post) => (
@@ -28,12 +28,11 @@ export default function PostCardComponents() {
 }
 
 function PostCard({ post, user }) {
-
-   const customParser = (html) => {
-    const sanitizedHtml = DOMPurify.sanitize(html); 
+  const customParser = (html) => {
+    const sanitizedHtml = DOMPurify.sanitize(html);
     return parse(sanitizedHtml, {
       replace: (domNode) => {
-        if (domNode.name === 'iframe') {
+        if (domNode.name === "iframe") {
           return (
             <iframe
               src={domNode.attribs.src}
@@ -44,7 +43,7 @@ function PostCard({ post, user }) {
             />
           );
         }
-        if (domNode.name === 'script') {
+        if (domNode.name === "script") {
           // Skip script tags
           return null;
         }
@@ -52,7 +51,6 @@ function PostCard({ post, user }) {
       },
     });
   };
-
 
   return (
     <div className="rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-base-100 overflow-hidden">
@@ -129,13 +127,19 @@ function PostCard({ post, user }) {
                   className="carousel-item w-full"
                 >
                   {media.includes("video") || media.endsWith(".mp4") ? (
-                    <video
-                      controls
-                      className="w-full h-80 object-contain rounded-lg"
-                    >
-                      <source src={media} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+                    <>
+                      <ReactPlayer
+                        key={media}
+                        url={media}
+                        controls
+                        width="100%"
+                        height="100%"
+                        config={{
+                          youtube: { playerVars: { showinfo: 1 } },
+                          file: { attributes: { controlsList: "nodownload" } },
+                        }}
+                      />
+                    </>
                   ) : (
                     <img
                       src={media}
@@ -155,9 +159,9 @@ function PostCard({ post, user }) {
         )}
 
         {post.content && (
-           <div className="prose prose-sm max-w-none mb-4">
-          {customParser(post.content)}
-        </div>
+          <div className="prose prose-sm max-w-none mb-4">
+            {customParser(post.content)}
+          </div>
         )}
 
         {/* Interaction Buttons */}
@@ -190,6 +194,3 @@ function PostCard({ post, user }) {
     </div>
   );
 }
-
-
-
