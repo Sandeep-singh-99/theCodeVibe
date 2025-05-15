@@ -56,9 +56,12 @@ const postSlice = createSlice({
               state.posts = [newPost, ...state.posts];
               state.postsUserId = [newPost, ...state.postsUserId];
         },
+        clearPostUserId: (state) => {
+            state.postsUserId = [];
+        }
     }
 })
 
-export const { setLoading, setError, setPosts, addPost, setTotalPosts, setPostsUserId, setDeletePost, setPostById } = postSlice.actions;
+export const { setLoading, setError, setPosts, addPost, setTotalPosts, setPostsUserId, setDeletePost, setPostById, clearPostUserId } = postSlice.actions;
 
 export default postSlice.reducer;

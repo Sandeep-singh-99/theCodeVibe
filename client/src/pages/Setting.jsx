@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useLogout } from "../api/authApi";
 import { logout } from "../redux/slice/authSlice";
 import { User, LogOut } from "lucide-react";
+import { clearPostUserId } from "../redux/slice/postSlice";
 
 export default function Setting() {
   const { user, loading, error } = useSelector((state) => state.auth);
@@ -16,6 +17,7 @@ export default function Setting() {
     try {
       await logoutMutation.mutateAsync();
       await dispatch(logout());
+      dispatch(clearPostUserId())
       toast.success("Logout successful");
       navigate("/");
     } catch (err) {
