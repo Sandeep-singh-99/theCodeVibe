@@ -4,8 +4,6 @@ dotenv.config();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import { fileURLToPath } from 'url';
-import path from 'path';
 
 import { ConnectDB } from './config/db.js';
 import userRoute from './routers/user.route.js';
@@ -15,9 +13,6 @@ import messageRoute from './routers/message.route.js';
 import commentRoute from './routers/comment.route.js';
 import { app, server } from './socket/socket.js';
 
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5001;
 
@@ -30,11 +25,6 @@ app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true}));
 
-app.use(express.static(path.join(__dirname, 'dist')));
-
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-});
 
 app.use('/api/auth', userRoute);
 app.use('/api/post', postRoute);
