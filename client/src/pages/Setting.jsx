@@ -6,6 +6,8 @@ import { useLogout } from "../api/authApi";
 import { logout } from "../redux/slice/authSlice";
 import { User, LogOut } from "lucide-react";
 import { clearPostUserId } from "../redux/slice/postSlice";
+import { persistStore } from "redux-persist";
+import store from "../redux/store";
 
 export default function Setting() {
   const { user, loading, error } = useSelector((state) => state.auth);
@@ -16,8 +18,10 @@ export default function Setting() {
   const handleLogout = async () => {
     try {
       await logoutMutation.mutateAsync();
-      await dispatch(logout());
+      dispatch(logout());
       dispatch(clearPostUserId())
+      const persistor = persistStore(store)
+      await persistor.purge();
       toast.success("Logout successful");
       navigate("/");
     } catch (err) {
