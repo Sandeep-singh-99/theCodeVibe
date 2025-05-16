@@ -1,19 +1,23 @@
 import express from 'express';
 import dotenv from 'dotenv';
-dotenv.config()
+dotenv.config();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
-import path from 'path'
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-import { ConnectDB }  from './config/db.js';
-import userRoute from './routers/user.route.js'
+import { ConnectDB } from './config/db.js';
+import userRoute from './routers/user.route.js';
 import postRoute from './routers/post.route.js';
-import bookmarkRoute from './routers/bookmark.route.js'
-import messageRoute from './routers/message.route.js'
-import commentRoute from './routers/comment.route.js'
-import { app, server } from './socket/socket.js'
+import bookmarkRoute from './routers/bookmark.route.js';
+import messageRoute from './routers/message.route.js';
+import commentRoute from './routers/comment.route.js';
+import { app, server } from './socket/socket.js';
 
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 5001;
 
@@ -24,23 +28,21 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('dev'));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true}));
 
-app.use(express.static(path.join(__dirname, 'dist')))
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.use('/api/auth', userRoute)
-app.use('/api/post', postRoute)
-app.use('/api/bookmark', bookmarkRoute)
-app.use('/api/message', messageRoute)
-app.use('/api/comment', commentRoute)
-
-
+app.use('/api/auth', userRoute);
+app.use('/api/post', postRoute);
+app.use('/api/bookmark', bookmarkRoute);
+app.use('/api/message', messageRoute);
+app.use('/api/comment', commentRoute);
 
 server.listen(PORT, () => {
-    ConnectDB()
+    ConnectDB();
     console.log(`server is running http://localhost:${PORT}`);
-})
+});
