@@ -17,7 +17,7 @@ import { app, server } from './socket/socket.js';
 const PORT = process.env.PORT || 5001;
 
 app.use(cors({
-    origin: "https://thecodevibe-1.onrender.com",
+    origin: `${process.env.CLIENT_URL}`,
     credentials: true,
 }));
 app.use(cookieParser());
