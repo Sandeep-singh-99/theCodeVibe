@@ -39,16 +39,6 @@ export default function App() {
     }
 
     if (FollowOrFollowing?.data) {
-      // const followingIds = FollowOrFollowing.data.following?.map((user) => user._id) || [];
-      // const followerIds = FollowOrFollowing.data.followers?.map((user) => user._id) || [];
-      // dispatch(
-      //   setUpdateProfile({
-      //     ...user,
-      //     followers: followerIds,
-      //     following: followingIds,
-      //   })
-      // );
-
        const following = FollowOrFollowing.data.following?.map((user) => ({
         _id: user._id,
         username: user.username,
@@ -72,7 +62,7 @@ export default function App() {
   // Manage socket connection
   useEffect(() => {
     if (user) {
-      const socket = initializeSocket("http://localhost:5000", user._id);
+      const socket = initializeSocket("https://thecodevibe.onrender.com", user._id);
       connectSocket();
 
       socket.on("connect", () => {
