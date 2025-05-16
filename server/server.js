@@ -4,6 +4,7 @@ dotenv.config()
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
+import path from 'path'
 
 import { ConnectDB }  from './config/db.js';
 import userRoute from './routers/user.route.js'
@@ -24,6 +25,12 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static(path.join(__dirname, 'dist')))
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 app.use('/api/auth', userRoute)
 app.use('/api/post', postRoute)
