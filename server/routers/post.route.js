@@ -1,7 +1,7 @@
 import express from 'express';
 import upload from '../middlewares/upload.middleware.js';
 import { authMiddleware } from '../middlewares/auth.middleware.js';
-import { createPost, deletePost, dislikePost, getAllPost, getPostById, getPostByUserId, getTotalPosts, likePost } from '../controllers/post.controller.js';
+import { createPost, deletePost, dislikePost, getAllPost, getPostById, getPostByUserId, getTotalPosts, likePost, trendingPosts } from '../controllers/post.controller.js';
 
 const router = express.Router();
 
@@ -18,6 +18,8 @@ router.route("/get-all-post").get(getAllPost)
 router.route("/get-total-post").get(authMiddleware, getTotalPosts)
 
 router.route("/get-user-post").get(authMiddleware, getPostByUserId)
+
+router.route("/trending-post").get(trendingPosts)
 
 router.route("/get-user-post-delete/:id").delete(authMiddleware, deletePost)
 

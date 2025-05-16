@@ -5,6 +5,7 @@ import bookmarkSlice from "./slice/bookmarkSlice";
 import chatSlice from "./slice/chatSlice";
 import SocketSlice from "./slice/socketSlice";
 import commentSlice from "./slice/commentSlice"
+import trendingSlice from "./slice/trendingSlice"
 
 import {
   persistReducer,
@@ -30,7 +31,8 @@ const rootReducer = combineReducers({
   bookmark: bookmarkSlice,
   chat: chatSlice,
   socket: SocketSlice,
-  comment: commentSlice
+  comment: commentSlice,
+  trending: trendingSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer)

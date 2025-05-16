@@ -117,7 +117,7 @@ function PostCard({ post, user }) {
   };
 
   return (
-    <div className="rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 border border-base-100 overflow-hidden">
+    <div className="rounded-xl bg-base-300 shadow-2xl transition-shadow duration-300 border border-base-100 overflow-hidden">
       <div className="p-5">
         {/* User Info */}
         <div className="flex items-center justify-between mb-4">
@@ -247,7 +247,7 @@ function PostCard({ post, user }) {
             aria-label="Comment on post"
           >
             <MessageCircle className="w-5 h-5" />
-            <span className="text-sm">8</span>
+            <span className="text-sm">{post.comments?.length || 0}</span>
           </Link>
           </div>
           <BookMarkBtnComponent id={post._id} />

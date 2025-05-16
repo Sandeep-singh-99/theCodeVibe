@@ -36,7 +36,7 @@ export default function LeftSideBar() {
             <span className="hidden lg:inline ml-4 text-xl">Home</span>
           </Link>
 
-          <button onClick={() => handleNavClick("")}
+          <button onClick={() => handleNavClick("/trending")}
             className="flex items-center px-4 py-2 text-white hover:bg-[#181818] rounded-full cursor-pointer transition-colors lg:w-11/12"
           >
             <TrendingUp />
