@@ -62,7 +62,7 @@ export default function App() {
   // Manage socket connection
   useEffect(() => {
     if (user) {
-      const socket = initializeSocket("https://thecodevibe.onrender.com", user._id);
+      const socket = initializeSocket(`${import.meta.env.VITE_API_URL}`, user._id);
       connectSocket();
 
       socket.on("connect", () => {

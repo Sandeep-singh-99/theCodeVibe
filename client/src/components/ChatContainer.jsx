@@ -80,7 +80,7 @@ export default function ChatContainer() {
     <div className="flex-1 flex flex-col h-full">
       <ChatHeader />
       <div
-        className="flex-1 max-h-[calc(100vh-140px)] overflow-y-auto p-4 space-y-4 custom-scrollbar"
+        className="flex-1 max-h-[calc(95vh-140px)] overflow-y-auto p-4 space-y-4 custom-scrollbar"
         role="log"
         aria-label="Chat messages"
       >

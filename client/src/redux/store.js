@@ -22,7 +22,7 @@ const persistConfig = {
   key: "root",
   version: 1,
   storage,
-  blacklist: ["comment"],
+  blacklist: ["comment", "chat"],
 };
 
 const rootReducer = combineReducers({
