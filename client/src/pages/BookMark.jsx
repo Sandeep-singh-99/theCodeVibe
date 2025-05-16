@@ -7,6 +7,8 @@ import {
   setDeleteBookmark,
 } from "../redux/slice/bookmarkSlice";
 import toast from "react-hot-toast";
+import DOMPurify from "dompurify";
+import parse from "html-react-parser";
 
 export default function BookMark() {
   const { data, isLoading, isError, error } = useGetAllBookmark();
@@ -21,20 +23,42 @@ export default function BookMark() {
   }, [data, dispatch]);
 
   const handleRemoveBookmark = (bookmarkId) => {
-  const updatedBookmarks = bookmarkPosts.filter((b) => b._id !== bookmarkId);
-  dispatch(setDeleteBookmark(updatedBookmarks));
+    const updatedBookmarks = bookmarkPosts.filter((b) => b._id !== bookmarkId);
+    dispatch(setDeleteBookmark(updatedBookmarks));
 
-  deleteBookmarkMutation.mutate(bookmarkId, {
-    onSuccess: (response) => {
-      toast.success(response.message || "Bookmark removed");
-    },
-    onError: (err) => {
-      toast.error(err.response?.data?.error || "Failed to remove bookmark");
-      dispatch(setDeleteBookmark(bookmarkPosts)); 
-    },
-  });
-};
+    deleteBookmarkMutation.mutate(bookmarkId, {
+      onSuccess: (response) => {
+        toast.success(response.message || "Bookmark removed");
+      },
+      onError: (err) => {
+        toast.error(err.response?.data?.error || "Failed to remove bookmark");
+        dispatch(setDeleteBookmark(bookmarkPosts));
+      },
+    });
+  };
 
+  const customParser = (html) => {
+    const sanitizedHtml = DOMPurify.sanitize(html);
+    return parse(sanitizedHtml, {
+      replace: (domNode) => {
+        if (domNode.name === "iframe") {
+          return (
+            <iframe
+              src={domNode.attribs.src}
+              width="100%"
+              height="400"
+              title="Iframe Content"
+              frameBorder="0"
+            />
+          );
+        }
+        if (domNode.name === "script") {
+          return null;
+        }
+        return null;
+      },
+    });
+  };
 
   if (isLoading) {
     return (
@@ -82,7 +106,7 @@ export default function BookMark() {
               return (
                 <div
                   key={bookmark._id}
-                  className="bg-black border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300"
+                  className="bg-base-300 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl transition-shadow duration-300"
                 >
                   <div className="flex items-center gap-4 mb-6">
                     <img
@@ -100,9 +124,9 @@ export default function BookMark() {
                     </div>
                   </div>
 
-                  <p className="text-gray-700 dark:text-white mb-6 leading-relaxed font-semibold">
-                    {post.content}
-                  </p>
+                  <div className="prose prose-sm max-w-none mb-4">
+                    {customParser(post.content)}
+                  </div>
 
                   {post.imagePic?.length > 0 && (
                     <img
