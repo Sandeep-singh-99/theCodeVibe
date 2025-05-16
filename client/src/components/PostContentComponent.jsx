@@ -95,7 +95,6 @@ const PostContentComponent = () => {
           );
         }
         if (domNode.name === 'script') {
-          // Skip script tags
           return null;
         }
         return null;
@@ -130,7 +129,7 @@ const PostContentComponent = () => {
           return (
             <div
               key={post._id}
-              className="bg-black border border-base-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 min-h-[400px] flex flex-col"
+              className="bg-base-300 border border-base-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 min-h-[400px] flex flex-col"
               role="article"
               aria-labelledby={`post-title-${post._id}`}
             >

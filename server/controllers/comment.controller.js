@@ -1,4 +1,5 @@
 import Comment from "../models/comment.model.js";
+import Post from "../models/post.model.js";
 
 export const addComment = async (req, res) => {
     try {
@@ -17,6 +18,8 @@ export const addComment = async (req, res) => {
         }
 
         const newComment = await Comment.create({ content, postId: id, userId })
+
+        await Post.findByIdAndUpdate(id, { $addToSet: { comments: newComment._id }})
 
         res.status(201).json({ data: newComment, message: "Comment added successfully" });
     } catch (error) {

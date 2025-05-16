@@ -10,6 +10,7 @@ import Profile from "../pages/Profile";
 import Message from "../pages/Message";
 import ProtectedRoutes from "../components/ProtectedRoutes";
 import PostView from "../pages/PostView";
+import TrendingPost from "../pages/TrendingPost";
 
 const routers = createBrowserRouter([
   {
@@ -67,6 +68,10 @@ const routers = createBrowserRouter([
       {
         path: "postView/:id",
         element: <PostView/>
+      },
+      {
+        path: "trending",
+        element: <TrendingPost/>
       }
     ],
   },
