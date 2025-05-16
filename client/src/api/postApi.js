@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { setLoading, setPosts, setError } from "../redux/slice/postSlice";
 
 // Base API URL
-const API_URL = "http://localhost:5000/api/post";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/post`;
 
 export const useCreatePost = () => {
   return useMutation({

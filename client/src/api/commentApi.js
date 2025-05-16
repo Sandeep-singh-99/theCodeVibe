@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
-const API_URL = "http://localhost:5000/api/comment";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/comment`;
 
 export const useAddComment = (id) => {
   return useMutation({
