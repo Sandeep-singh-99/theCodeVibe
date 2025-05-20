@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Heart, MessageCircle, Share2, MoreVertical } from "lucide-react";
+import { Heart, MessageCircle, MoreVertical } from "lucide-react";
 import BookMarkBtnComponent from "./BookMarkBtnComponent";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
 import { Link } from "react-router-dom";
@@ -117,7 +117,7 @@ function PostCard({ post, user }) {
   };
 
   return (
-    <div className="rounded-xl bg-base-300 shadow-2xl transition-shadow duration-300 border border-base-100 overflow-hidden">
+    <div className="rounded-xl shadow-2xl max-w-lg transition-shadow duration-300 border border-base-100 overflow-hidden">
       <div className="p-5">
         {/* User Info */}
         <div className="flex items-center justify-between mb-4">
@@ -132,12 +132,11 @@ function PostCard({ post, user }) {
               </div>
             </div>
             <div>
-              <Link
-                to={`/profile/${post.userId._id}`}
+              <div
                 className="font-semibold text-base-content"
               >
                 {post.userId.username}
-              </Link>
+              </div>
               <span className="text-xs text-gray-500 block">
                 {new Date(post.createdAt).toLocaleString("en-US", {
                   month: "short",
@@ -220,7 +219,7 @@ function PostCard({ post, user }) {
         )}
 
         {post.content && (
-          <div className="prose prose-sm max-w-none mb-4">
+          <div className="prose max-w-none mb-4">
             {customParser(post.content)}
           </div>
         )}

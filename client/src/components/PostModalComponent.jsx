@@ -107,7 +107,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
           <h3 className="text-xl font-semibold text-gray-900">Create a post</h3>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-full cursor-pointer hover:bg-gray-100 transition-colors"
             aria-label="Close modal"
           >
             <X className="w-5 h-5 text-gray-600" />
@@ -205,7 +205,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
                 className="hidden"
                 onChange={handleMediaChange}
               />
-              <ImageMinus className="w-5 h-5 text-blue-500" />
+              <ImageMinus className="w-5 h-5 font-semibold text-black" />
             </label>
             <label className="cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors">
               <input
@@ -214,7 +214,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
                 className="hidden"
                 onChange={handleMediaChange}
               />
-              <VideoOff className="w-5 h-5 text-blue-500" />
+              <VideoOff className="w-5 h-5 font-semibold text-black" />
             </label>
           </div>
           <div>
