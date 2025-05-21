@@ -5,12 +5,15 @@ import {
   Share2,
   FileText,
   MoreVertical,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { useDeletePost } from "../api/postApi";
 import { setDeletePost } from "../redux/slice/postSlice";
 import { useState } from "react";
 import DOMPurify from "dompurify";
-import parse from 'html-react-parser';
+import parse from "html-react-parser";
+import ReactPlayer from "react-player";
 
 const PostContentComponent = () => {
   const { postsUserId, isLoading, isError } = useSelector(
@@ -21,6 +24,7 @@ const PostContentComponent = () => {
 
   const [expandedPosts, setExpandedPosts] = useState({});
   const [isDeleteLoading, setIsDeleteLoading] = useState(null);
+  const [slideIndices, setSlideIndices] = useState({}); 
 
   const handleDelete = (postId) => {
     setIsDeleteLoading(postId);
@@ -28,10 +32,16 @@ const PostContentComponent = () => {
       onSuccess: () => {
         dispatch(setDeletePost(postId));
         setIsDeleteLoading(null);
+        setSlideIndices((prev) => {
+          const newIndices = { ...prev };
+          delete newIndices[postId];
+          return newIndices;
+        });
       },
       onError: (error) => {
+        console.error("Delete post error:", error);
         setIsDeleteLoading(null);
-      }
+      },
     });
   };
 
@@ -40,6 +50,49 @@ const PostContentComponent = () => {
       ...prev,
       [postId]: !prev[postId],
     }));
+  };
+
+  const handlePrevSlide = (postId, totalSlides) => {
+    setSlideIndices((prev) => {
+      const newIndex = (prev[postId] || 0) === 0 ? totalSlides - 1 : (prev[postId] || 0) - 1;
+      console.log(`Prev slide for post ${postId}: ${newIndex}`);
+      return { ...prev, [postId]: newIndex };
+    });
+  };
+
+  const handleNextSlide = (postId, totalSlides) => {
+    setSlideIndices((prev) => {
+      const newIndex = (prev[postId] || 0) === totalSlides - 1 ? 0 : (prev[postId] || 0) + 1;
+      console.log(`Next slide for post ${postId}: ${newIndex}`);
+      return { ...prev, [postId]: newIndex };
+    });
+  };
+
+  const customParser = (html) => {
+    if (typeof html !== "string") {
+      console.warn("Invalid HTML content:", html);
+      return null;
+    }
+    const sanitizedHtml = DOMPurify.sanitize(html);
+    return parse(sanitizedHtml, {
+      replace: (domNode) => {
+        if (domNode.name === "iframe") {
+          return (
+            <iframe
+              src={domNode.attribs.src}
+              width="100%"
+              height="400"
+              title="Iframe Content"
+              frameBorder="0"
+            />
+          );
+        }
+        if (domNode.name === "script") {
+          return null;
+        }
+        return null;
+      },
+    });
   };
 
   if (isLoading) {
@@ -79,45 +132,24 @@ const PostContentComponent = () => {
     );
   }
 
-  const customParser = (html) => {
-    const sanitizedHtml = DOMPurify.sanitize(html); 
-    return parse(sanitizedHtml, {
-      replace: (domNode) => {
-        if (domNode.name === 'iframe') {
-          return (
-            <iframe
-              src={domNode.attribs.src}
-              width="100%"
-              height="400"
-              title="Iframe Content"
-              frameBorder="0"
-            />
-          );
-        }
-        if (domNode.name === 'script') {
-          return null;
-        }
-        return null;
-      },
-    });
-  };
-
   return (
-    <div className="p-4 sm:p-6 lg:p-8  min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 min-h-screen">
       <h3 className="text-2xl font-bold mb-6 text-white tracking-tight">
         Posts
       </h3>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {postsUserId.map((post) => {
           const isExpanded = expandedPosts[post._id];
-
           const isLongPost =
             typeof post.content === "string" && post.content.length > 150;
-
           const displayContent =
             isLongPost && !isExpanded
               ? `${post.content.slice(0, 150)}...`
               : post.content;
+          const mediaItems = [...(post.imagePic || []), ...(post.videos || [])];
+          const totalSlides = mediaItems.length;
+          const currentSlide = slideIndices[post._id] || 0;
+
 
           if (!post.content) {
             console.warn(
@@ -190,7 +222,7 @@ const PostContentComponent = () => {
                       >
                         {isDeleteLoading === post._id ? (
                           <span className="loading loading-spinner loading-sm"></span>
-                        ): (
+                        ) : (
                           "Delete"
                         )}
                       </button>
@@ -212,25 +244,71 @@ const PostContentComponent = () => {
                     {isExpanded ? "Show Less" : "Read More"}
                   </button>
                 )}
-                {/* Post Media */}
-                {post.imagePic?.length > 0 && (
-                  <div className="mt-4">
-                    <img
-                      src={post.imagePic[0]}
-                      alt="Post media"
-                      className="w-full h-48 sm:h-64 object-cover rounded-lg"
-                      loading="lazy"
-                    />
+                {/* Post Media: DaisyUI Carousel */}
+                {mediaItems.length > 0 ? (
+                  <div className="mt-4 relative">
+                    <div className="carousel w-full h-48 sm:h-64 rounded-lg overflow-hidden bg-gray-50">
+                      {mediaItems.map((media, index) => (
+                        <div
+                          key={`${post._id}-media-${index}`}
+                          id={`slide-${post._id}-${index}`}
+                          className={`carousel-item w-full relative ${
+                            index === currentSlide ? "block" : "hidden"
+                          }`}
+                        >
+                          {media.includes("video") || media.endsWith(".mp4") ? (
+                            <ReactPlayer
+                              url={media}
+                              controls
+                              width="100%"
+                              height="100%"
+                              playing={index === currentSlide}
+                              onError={(e) => console.error(`Video error for ${media}:`, e)}
+                              config={{
+                                youtube: { playerVars: { showinfo: 1 } },
+                                file: { attributes: { controlsList: "nodownload" } },
+                              }}
+                            />
+                          ) : (
+                            <img
+                              src={media}
+                              alt={`Post media ${index + 1}`}
+                              className="w-full h-48 sm:h-64 object-cover rounded-lg"
+                              loading="lazy"
+                              onError={(e) => {
+                                console.error(`Image failed to load: ${media}`);
+                                e.target.src = "https://via.placeholder.com/400";
+                              }}
+                            />
+                          )}
+                          <div className="absolute top-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full">
+                            {index + 1}/{totalSlides}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    {totalSlides > 1 && (
+                      <div className="absolute top-1/2 transform -translate-y-1/2 flex justify-between w-full px-2">
+                        <button
+                          onClick={() => handlePrevSlide(post._id, totalSlides)}
+                          className="btn btn-circle btn-sm bg-gray-800 text-white hover:bg-gray-700"
+                          aria-label="Previous slide"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleNextSlide(post._id, totalSlides)}
+                          className="btn btn-circle btn-sm bg-gray-800 text-white hover:bg-gray-700"
+                          aria-label="Next slide"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-                {post.videos?.length > 0 && (
-                  <div className="mt-4">
-                    <video
-                      src={post.videos[0]}
-                      controls
-                      className="w-full h-48 sm:h-64 object-cover rounded-lg"
-                      aria-label="Post video"
-                    />
+                ) : (
+                  <div className="mt-4 text-gray-500 text-sm">
+                    No media available
                   </div>
                 )}
               </div>

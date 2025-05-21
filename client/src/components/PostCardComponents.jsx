@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Heart, MessageCircle, MoreVertical } from "lucide-react";
+import { Heart, MessageCircle, MoreVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import BookMarkBtnComponent from "./BookMarkBtnComponent";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
 import { Link } from "react-router-dom";
@@ -15,7 +15,6 @@ export default function PostCardComponents() {
   const { posts } = useSelector((state) => state.posts);
   const { user } = useSelector((state) => state.auth);
 
-  // Handle non-array or empty posts
   if (!Array.isArray(posts) || posts.length === 0) {
     return (
       <div className="text-gray-500 text-center py-8">No posts to show</div>
@@ -34,12 +33,15 @@ export default function PostCardComponents() {
 function PostCard({ post, user }) {
   const dispatch = useDispatch();
   const { posts } = useSelector((state) => state.posts);
-  const queryClient = useQueryClient(); 
+  const queryClient = useQueryClient();
   const { mutate: likePost } = useLikePost();
   const { mutate: dislikePost } = useDislikePost();
-  const [isLiking, setIsLiking] = useState(false);
+  const [isLiking, setIsLiking] = useState(false)
+  const [currentSlide, setCurrentSlide] = useState(0); 
 
   const isLiked = Array.isArray(post.likes) && post.likes.includes(user?._id);
+  const mediaItems = [...(post.imagePic || []), ...(post.videos || [])];
+  const totalSlides = mediaItems.length;
 
   const handleLikeClick = () => {
     if (!user?._id) {
@@ -49,7 +51,7 @@ function PostCard({ post, user }) {
     if (isLiking) return;
 
     setIsLiking(true);
-    const previousPosts = posts; 
+    const previousPosts = posts;
     const updatedPost = {
       ...post,
       likes: isLiked
@@ -57,7 +59,6 @@ function PostCard({ post, user }) {
         : [...(post.likes || []), user._id],
     };
 
-    // Optimistic update
     dispatch(
       setPosts(posts.map((p) => (p._id === post._id ? updatedPost : p)))
     );
@@ -116,8 +117,17 @@ function PostCard({ post, user }) {
     });
   };
 
+  // Handle carousel navigation
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
+  };
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
+  };
+
   return (
-    <div className="rounded-xl shadow-2xl max-w-lg transition-shadow duration-300 border border-base-100 overflow-hidden">
+    <div className="rounded-xl shadow-2xl max-w-lg hover:glass hover:shadow-gray-400 hover:shadow-2xl/25 transition-shadow duration-300 border border-base-100 overflow-hidden">
       <div className="p-5">
         {/* User Info */}
         <div className="flex items-center justify-between mb-4">
@@ -132,9 +142,7 @@ function PostCard({ post, user }) {
               </div>
             </div>
             <div>
-              <div
-                className="font-semibold text-base-content"
-              >
+              <div className="font-semibold text-base-content">
                 {post.userId.username}
               </div>
               <span className="text-xs text-gray-500 block">
@@ -179,22 +187,25 @@ function PostCard({ post, user }) {
           )}
         </div>
 
-        {/* Media: Images and Videos */}
-        {(post.imagePic.length > 0 || post.videos.length > 0) && (
-          <div className="mb-4">
-            <div className="carousel rounded-lg w-full h-80 relative overflow-hidden bg-gray-50">
-              {[...post.imagePic, ...post.videos].map((media, index) => (
+        {/* Media: Images and Videos in DaisyUI Carousel */}
+        {mediaItems.length > 0 && (
+          <div className="mb-4 relative">
+            <div className="carousel w-full h-80 rounded-lg overflow-hidden bg-gray-50">
+              {mediaItems.map((media, index) => (
                 <div
                   key={`${post._id}-media-${index}`}
-                  className="carousel-item w-full"
+                  id={`slide-${post._id}-${index}`}
+                  className={`carousel-item w-full relative ${
+                    index === currentSlide ? "block" : "hidden"
+                  }`}
                 >
                   {media.includes("video") || media.endsWith(".mp4") ? (
                     <ReactPlayer
-                      key={media}
                       url={media}
                       controls
                       width="100%"
                       height="100%"
+                      playing={index === currentSlide} 
                       config={{
                         youtube: { playerVars: { showinfo: 1 } },
                         file: { attributes: { controlsList: "nodownload" } },
@@ -205,16 +216,34 @@ function PostCard({ post, user }) {
                       src={media}
                       alt={`Post media ${index + 1}`}
                       className="w-full h-80 object-contain rounded-lg"
+                      loading="lazy" 
                     />
                   )}
-                  {[...post.imagePic, ...post.videos].length > 1 && (
-                    <div className="absolute top-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full">
-                      {index + 1}/{[...post.imagePic, ...post.videos].length}
-                    </div>
-                  )}
+                  <div className="absolute top-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full">
+                    {index + 1}/{totalSlides}
+                  </div>
                 </div>
               ))}
             </div>
+            {/* Carousel Navigation Arrows */}
+            {totalSlides > 1 && (
+              <div className="absolute top-1/2 transform -translate-y-1/2 flex justify-between w-full px-2">
+                <button
+                  onClick={handlePrevSlide}
+                  className="btn btn-circle btn-sm bg-gray-800 text-white hover:bg-gray-700"
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={handleNextSlide}
+                  className="btn btn-circle btn-sm bg-gray-800 text-white hover:bg-gray-700"
+                  aria-label="Next slide"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
         )}
 
@@ -227,27 +256,27 @@ function PostCard({ post, user }) {
         {/* Interaction Buttons */}
         <div className="flex justify-between items-center gap-3 pt-3">
           <div className="flex items-center gap-5">
-             <button
-            className={`flex items-center gap-1 ${
-              isLiked
-                ? "text-red-500 bg-red-50"
-                : "text-gray-500 hover:text-red-500 hover:bg-red-50"
-            } px-3 py-1 rounded-full transition-colors ${isLiking ? "opacity-50" : ""}`}
-            onClick={handleLikeClick}
-            disabled={isLiking}
-            aria-label="Like post"
-          >
-            <Heart className="w-5 h-5" fill={isLiked ? "currentColor" : "none"} />
-            <span className="text-sm">{post.likes?.length || 0}</span>
-          </button>
-          <Link
-            to={`postView/${post._id}`}
-            className="flex items-center gap-1 text-gray-500 hover:text-blue-500 hover:bg-blue-50 px-3 py-1 rounded-full transition-colors"
-            aria-label="Comment on post"
-          >
-            <MessageCircle className="w-5 h-5" />
-            <span className="text-sm">{post.comments?.length || 0}</span>
-          </Link>
+            <button
+              className={`flex items-center gap-1 ${
+                isLiked
+                  ? "text-red-500 bg-red-50"
+                  : "text-gray-500 hover:text-red-500 hover:bg-red-50"
+              } px-3 py-1 rounded-full transition-colors ${isLiking ? "opacity-50" : ""}`}
+              onClick={handleLikeClick}
+              disabled={isLiking}
+              aria-label="Like post"
+            >
+              <Heart className="w-5 h-5" fill={isLiked ? "currentColor" : "none"} />
+              <span className="text-sm">{post.likes?.length || 0}</span>
+            </button>
+            <Link
+              to={`postView/${post._id}`}
+              className="flex items-center gap-1 text-gray-500 hover:text-blue-500 hover:bg-blue-50 px-3 py-1 rounded-full transition-colors"
+              aria-label="Comment on post"
+            >
+              <MessageCircle className="w-5 h-5" />
+              <span className="text-sm">{post.comments?.length || 0}</span>
+            </Link>
           </div>
           <BookMarkBtnComponent id={post._id} />
         </div>

@@ -9,8 +9,8 @@ import "react-quill/dist/quill.snow.css";
 
 export default function PostModalComponent({ isOpen, onClose }) {
   const [postContent, setPostContent] = useState("");
-  const [mediaFile, setMediaFile] = useState(null);
-  const [mediaPreview, setMediaPreview] = useState(null);
+  const [mediaFiles, setMediaFiles] = useState([]); 
+  const [mediaPreviews, setMediaPreviews] = useState([]); 
   const [postData, setPostData] = useState(null);
   const maxFileSize = 50 * 1024 * 1024; 
 
@@ -26,7 +26,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
 
   const handlePost = () => {
     const strippedContent = postContent.replace(/<(.|\n)*?>/g, "").trim();
-    if (!strippedContent && !mediaFile) {
+    if (!strippedContent && mediaFiles.length === 0) {
       alert("Please add some content or media to share.");
       return;
     }
@@ -35,18 +35,18 @@ export default function PostModalComponent({ isOpen, onClose }) {
     if (strippedContent) {
       formData.append("content", postContent);
     }
-    if (mediaFile) {
-      const fieldName = mediaFile.type.startsWith("video/") ? "videos" : "images";
-      formData.append(fieldName, mediaFile);
-    }
+    mediaFiles.forEach((file) => {
+      const fieldName = file.type.startsWith("video/") ? "videos" : "images";
+      formData.append(fieldName, file);
+    });
 
     createPost(formData, {
       onSuccess: (data) => {
         setPostData(data.data);
         dispatch(addPost(data.data));
         setPostContent("");
-        setMediaFile(null);
-        setMediaPreview(null);
+        setMediaFiles([]);
+        setMediaPreviews([]);
         setTimeout(onClose, 1500);
       },
       onError: (error) => {
@@ -55,22 +55,43 @@ export default function PostModalComponent({ isOpen, onClose }) {
     });
   };
 
-
   const handleMediaChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const allowedTypes = ["image/jpeg", "image/png", "video/mp4"];
+    const files = Array.from(e.target.files); 
+    const allowedTypes = ["image/jpeg", "image/png", "video/mp4"];
+    const validFiles = files.filter((file) => {
       if (!allowedTypes.includes(file.type)) {
-        alert("Please select a JPEG, PNG, or MP4 file.");
-        return;
+        alert(`File ${file.name} is not a valid type. Only JPEG, PNG, or MP4 allowed.`);
+        return false;
       }
       if (file.size > maxFileSize) {
-        alert("File size exceeds 50MB limit.");
-        return;
+        alert(`File ${file.name} exceeds 50MB limit.`);
+        return false;
       }
-      setMediaFile(file);
-      setMediaPreview(URL.createObjectURL(file));
+      return true;
+    });
+
+    
+    const totalImages = validFiles.filter((file) => file.type.startsWith("image/")).length;
+    const totalVideos = validFiles.filter((file) => file.type.startsWith("video/")).length;
+    if (totalImages > 10) {
+      alert("You can upload a maximum of 10 images.");
+      return;
     }
+    if (totalVideos > 5) {
+      alert("You can upload a maximum of 5 videos.");
+      return;
+    }
+
+    setMediaFiles(validFiles);
+    setMediaPreviews(validFiles.map((file) => URL.createObjectURL(file)));
+  };
+
+  const removeMedia = (index) => {
+    setMediaFiles((prev) => prev.filter((_, i) => i !== index));
+    setMediaPreviews((prev) => {
+      URL.revokeObjectURL(prev[index]);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const handleOverlayClick = (e) => {
@@ -82,25 +103,22 @@ export default function PostModalComponent({ isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) {
       setPostContent("");
-      if (mediaPreview) {
-        URL.revokeObjectURL(mediaPreview);
-      }
-      setMediaFile(null);
-      setMediaPreview(null);
+      mediaPreviews.forEach((preview) => URL.revokeObjectURL(preview));
+      setMediaFiles([]);
+      setMediaPreviews([]);
       setPostData(null);
     }
-  }, [isOpen, mediaPreview]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return createPortal(
     <dialog
-    id="post_modal"
+      id="post_modal"
       className="fixed modal inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm"
       open={isOpen}
       onClick={handleOverlayClick}
-    > 
-     {/* w-full max-w-2xl rounded-2xl bg-white shadow-2xl p-6 relative max-h-[90vh] overflow-y-auto */}
+    >
       <div className="modal-box bg-white shadow-2xl/100 shadow-gray-400 border border-gray-400 text-white w-full max-w-2xl rounded-lg">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
@@ -122,7 +140,6 @@ export default function PostModalComponent({ isOpen, onClose }) {
             className="w-12 h-12 rounded-full object-cover border border-gray-200"
           />
           <div className="flex-1">
-            {/* <p className="text-sm font-medium text-gray-900">{user?.username || "User"}</p> */}
             <ReactQuill
               value={postContent}
               onChange={setPostContent}
@@ -148,39 +165,60 @@ export default function PostModalComponent({ isOpen, onClose }) {
                 "code-block": ["code-block"],
                 list: ["list"],
                 link: ["link"],
-                "ordered": ["ordered"],
-                "bullet": ["bullet"],
+                ordered: ["ordered"],
+                bullet: ["bullet"],
               }}
             />
           </div>
         </div>
 
-        {/* Media Preview */}
-        {mediaPreview && (
+        {/* Media Preview - DaisyUI Carousel */}
+        {mediaPreviews.length > 0 && (
           <div className="mt-4 relative">
-            {mediaFile?.type.startsWith("video/") ? (
-              <video
-                src={mediaPreview}
-                controls
-                className="w-full max-h-96 rounded-lg object-contain bg-gray-100"
-              />
-            ) : (
-              <img
-                src={mediaPreview}
-                alt="Media preview"
-                className="w-full max-h-96 rounded-lg object-contain bg-gray-100"
-              />
+            <div className="carousel w-full max-h-96 rounded-lg">
+              {mediaPreviews.map((preview, index) => (
+                <div
+                  key={index}
+                  id={`slide-${index}`}
+                  className="carousel-item relative w-full"
+                >
+                  {mediaFiles[index]?.type.startsWith("video/") ? (
+                    <video
+                      src={preview}
+                      controls
+                      className="w-full max-h-96 object-contain bg-gray-100"
+                    />
+                  ) : (
+                    <img
+                      src={preview}
+                      alt={`Media preview ${index + 1}`}
+                      className="w-full max-h-96 object-contain bg-gray-100"
+                    />
+                  )}
+                  <button
+                    onClick={() => removeMedia(index)}
+                    className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    aria-label="Remove media"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            {/* Carousel Navigation */}
+            {mediaPreviews.length > 1 && (
+              <div className="flex justify-center w-full py-2 gap-2">
+                {mediaPreviews.map((_, index) => (
+                  <a
+                    key={index}
+                    href={`#slide-${index}`}
+                    className="btn btn-xs btn-circle"
+                  >
+                    {index + 1}
+                  </a>
+                ))}
+              </div>
             )}
-            <button
-              onClick={() => {
-                setMediaFile(null);
-                setMediaPreview(null);
-              }}
-              className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
-              aria-label="Remove media"
-            >
-              <X className="w-4 h-4" />
-            </button>
           </div>
         )}
 
@@ -204,6 +242,7 @@ export default function PostModalComponent({ isOpen, onClose }) {
                 accept="image/jpeg,image/png"
                 className="hidden"
                 onChange={handleMediaChange}
+                multiple 
               />
               <ImageMinus className="w-5 h-5 font-semibold text-black" />
             </label>
@@ -213,18 +252,19 @@ export default function PostModalComponent({ isOpen, onClose }) {
                 accept="video/mp4"
                 className="hidden"
                 onChange={handleMediaChange}
+                multiple 
               />
               <VideoOff className="w-5 h-5 font-semibold text-black" />
             </label>
           </div>
           <div>
             <button
-            onClick={handlePost}
-            disabled={(!postContent.replace(/<(.|\n)*?>/g, "").trim() && !mediaFile) || isPending}
-            className="px-4 py-2 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
-          >
-            {isPending ? "Sharing..." : "Share"}
-          </button>
+              onClick={handlePost}
+              disabled={(!postContent.replace(/<(.|\n)*?>/g, "").trim() && mediaFiles.length === 0) || isPending}
+              className="px-4 py-2 bg-blue-500 text-white rounded-full font-medium hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
+              {isPending ? "Sharing..." : "Share"}
+            </button>
           </div>
         </div>
       </div>

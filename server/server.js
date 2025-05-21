@@ -12,6 +12,7 @@ import bookmarkRoute from './routers/bookmark.route.js';
 import messageRoute from './routers/message.route.js';
 import commentRoute from './routers/comment.route.js';
 import { app, server } from './socket/socket.js';
+import './cron/deleteExpiredStories.js'
 
 
 const PORT = process.env.PORT || 5001;

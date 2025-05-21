@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDeleteBookmark, useGetAllBookmark } from "../api/bookmarkApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,16 +9,30 @@ import {
 import toast from "react-hot-toast";
 import DOMPurify from "dompurify";
 import parse from "html-react-parser";
+import ReactPlayer from "react-player";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function BookMark() {
   const { data, isLoading, isError, error } = useGetAllBookmark();
   const deleteBookmarkMutation = useDeleteBookmark();
   const dispatch = useDispatch();
   const { bookmarkPosts } = useSelector((state) => state.bookmark);
+  
+  const [slideIndices, setSlideIndices] = useState({});
 
   useEffect(() => {
     if (data?.data) {
       dispatch(getBookmarkPosts(data.data));
+
+      setSlideIndices((prev) => {
+        const newIndices = { ...prev };
+        data.data.forEach((bookmark) => {
+          if (!newIndices[bookmark._id]) {
+            newIndices[bookmark._id] = 0;
+          }
+        });
+        return newIndices;
+      });
     }
   }, [data, dispatch]);
 
@@ -29,6 +43,11 @@ export default function BookMark() {
     deleteBookmarkMutation.mutate(bookmarkId, {
       onSuccess: (response) => {
         toast.success(response.message || "Bookmark removed");
+        setSlideIndices((prev) => {
+          const newIndices = { ...prev };
+          delete newIndices[bookmarkId];
+          return newIndices;
+        });
       },
       onError: (err) => {
         toast.error(err.response?.data?.error || "Failed to remove bookmark");
@@ -58,6 +77,20 @@ export default function BookMark() {
         return null;
       },
     });
+  };
+
+  const handlePrevSlide = (bookmarkId, totalSlides) => {
+    setSlideIndices((prev) => ({
+      ...prev,
+      [bookmarkId]: prev[bookmarkId] === 0 ? totalSlides - 1 : prev[bookmarkId] - 1,
+    }));
+  };
+
+  const handleNextSlide = (bookmarkId, totalSlides) => {
+    setSlideIndices((prev) => ({
+      ...prev,
+      [bookmarkId]: prev[bookmarkId] === totalSlides - 1 ? 0 : prev[bookmarkId] + 1,
+    }));
   };
 
   if (isLoading) {
@@ -102,6 +135,9 @@ export default function BookMark() {
             {bookmarkPosts.map((bookmark) => {
               const post = bookmark.postId;
               const user = post.userId;
+              const mediaItems = [...(post.imagePic || []), ...(post.videos || [])];
+              const totalSlides = mediaItems.length;
+              const currentSlide = slideIndices[bookmark._id] || 0;
 
               return (
                 <div
@@ -128,34 +164,72 @@ export default function BookMark() {
                     {customParser(post.content)}
                   </div>
 
-                  {post.imagePic?.length > 0 && (
-                    <img
-                      src={post.imagePic[0]}
-                      alt="Post media"
-                      className="w-full max-h-[400px] object-cover rounded-lg mb-6"
-                    />
-                  )}
-                  {post.videos?.length > 0 && (
-                    <video
-                      controls
-                      className="w-full max-h-[400px] object-cover rounded-lg mb-6"
-                    >
-                      <source src={post.videos[0]} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
+                  {mediaItems.length > 0 && (
+                    <div className="mb-6 relative">
+                      <div className="carousel w-full h-80 rounded-lg overflow-hidden bg-gray-50">
+                        {mediaItems.map((media, index) => (
+                          <div
+                            key={`${bookmark._id}-media-${index}`}
+                            id={`slide-${bookmark._id}-${index}`}
+                            className={`carousel-item w-full relative ${
+                              index === currentSlide ? "block" : "hidden"
+                            }`}
+                          >
+                            {media.includes("video") || media.endsWith(".mp4") ? (
+                              <ReactPlayer
+                                url={media}
+                                controls
+                                width="100%"
+                                height="100%"
+                                playing={index === currentSlide}
+                                config={{
+                                  youtube: { playerVars: { showinfo: 1 } },
+                                  file: { attributes: { controlsList: "nodownload" } },
+                                }}
+                              />
+                            ) : (
+                              <img
+                                src={media}
+                                alt={`Post media ${index + 1}`}
+                                className="w-full h-80 object-contain rounded-lg"
+                                loading="lazy"
+                              />
+                            )}
+                            <div className="absolute top-2 right-2 bg-gray-800 text-white text-xs px-2 py-1 rounded-full">
+                              {index + 1}/{totalSlides}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {totalSlides > 1 && (
+                        <div className="absolute top-1/2 transform -translate-y-1/2 flex justify-between w-full px-2">
+                          <button
+                            onClick={() => handlePrevSlide(bookmark._id, totalSlides)}
+                            className="btn btn-circle btn-sm bg-gray-800 text-white hover:bg-gray-700"
+                            aria-label="Previous slide"
+                          >
+                            <ChevronLeft className="w-5 h-5" />
+                          </button>
+                          <button
+                            onClick={() => handleNextSlide(bookmark._id, totalSlides)}
+                            className="btn btn-circle btn-sm bg-gray-800 text-white hover:bg-gray-700"
+                            aria-label="Next slide"
+                          >
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
 
                   <div className="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
                     <span>
                       Bookmarked on{" "}
-                      {new Date(bookmark.createdAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        }
-                      )}
+                      {new Date(bookmark.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </span>
                     <button
                       className="px-4 py-2 bg-red-100 text-red-600 font-medium rounded-full hover:bg-red-200 transition-colors duration-300"
