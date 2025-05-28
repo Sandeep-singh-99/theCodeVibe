@@ -5,6 +5,7 @@ import { useGetAllPost } from "../api/postApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts, setLoading, setError } from "../redux/slice/postSlice";
 import toast from "react-hot-toast";
+import Feed from "../components/Feed";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -54,6 +55,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen p-6 bg-black">
+      <Feed/>
       <div className="max-w-4xl mx-auto flex flex-col lg:flex-row gap-8">
         <div className="flex-1 max-w-2xl">
           <div className="space-y-6">
