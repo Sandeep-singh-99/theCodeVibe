@@ -127,7 +127,7 @@ function PostCard({ post, user }) {
   };
 
   return (
-    <div className="rounded-xl shadow-2xl max-w-lg hover:glass hover:shadow-gray-400 hover:shadow-2xl/25 transition-shadow duration-300 border border-base-100 overflow-hidden">
+    <div className="rounded-xl shadow-2xl max-w-lg  hover:shadow-gray-400 hover:shadow-2xl/40 transition-shadow duration-300 border border-base-100 overflow-hidden">
       <div className="p-5">
         {/* User Info */}
         <div className="flex items-center justify-between mb-4">

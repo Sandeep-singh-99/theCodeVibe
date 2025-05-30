@@ -160,3 +160,22 @@ export const useGetSuggestedUsers = () => {
     },
   });
 }
+
+
+export const useGetUserById = (id) => {
+  return useQuery({
+    queryKey: ["get-user-by-id", id],
+    queryFn: async () => {
+      const response = await axios.get(`${API_URL}/getUser/${id}`, {
+        withCredentials: true,
+      });
+      return response.data;
+    },
+    onError: (error) => {
+      console.error(
+        "Get user by ID failed:",
+        error.response?.data?.message || error.message
+      );
+    },
+  });
+}
