@@ -8,12 +8,11 @@ import toast from "react-hot-toast";
 import { formatMessageTime } from "../utils/formateTime";
 
 export default function ChatContainer() {
-  const { selectedUser } = useSelector((state) => state.auth);
-  const { user } = useSelector((state) => state.auth);
+  const { selectedUser, user } = useSelector((state) => state.auth);
   const messagesEndRef = useRef(null);
 
   const {
-    data: messages,
+    data: messages = [],
     isLoading,
     error,
   } = useGetChatMessages(selectedUser?._id);
@@ -35,17 +34,16 @@ export default function ChatContainer() {
 
     return (
       <div
-        className={`chat ${
-          isSender ? "chat-end" : "chat-start"
-        } group relative`}
+        key={message._id}
+        className={`chat ${isSender ? "chat-end" : "chat-start"} group relative`}
       >
         <div className="chat-image avatar">
           <div className="size-10 rounded-full border">
             <img
               src={
                 isSender
-                  ? user.profilePic || "/avatar.png"
-                  : selectedUser.profilePic || "/avatar.png"
+                  ? user?.profilePic || "/avatar.png"
+                  : selectedUser?.profilePic || "/avatar.png"
               }
               alt="profile pic"
             />
@@ -77,10 +75,10 @@ export default function ChatContainer() {
   };
 
   return (
-    <div className="flex-1 flex flex-col h-full">
+    <div className="flex flex-col h-screen w-full">
       <ChatHeader />
       <div
-        className="flex-1 max-h-[calc(95vh-140px)] overflow-y-auto p-4 space-y-4 custom-scrollbar"
+        className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar"
         role="log"
         aria-label="Chat messages"
       >
@@ -94,15 +92,19 @@ export default function ChatContainer() {
             Select a user to start chatting
           </div>
         )}
-        {!isLoading && messages?.length === 0 && selectedUser && (
+        {!isLoading && messages.length === 0 && selectedUser && (
           <div className="flex justify-center items-center h-full text-gray-500">
             No messages yet. Start the conversation!
           </div>
         )}
-        {!isLoading && messages?.map((message) => renderMessage(message))}
+        {!isLoading && messages.map(renderMessage)}
         <div ref={messagesEndRef} />
       </div>
-      {selectedUser && <MessageInput />}
+      {selectedUser && (
+        <div className="sticky bottom-0 z-10">
+          <MessageInput />
+        </div>
+      )}
     </div>
   );
 }
