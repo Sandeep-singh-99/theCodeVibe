@@ -3,6 +3,7 @@ import { useGetSuggestedUsers } from "../api/authApi";
 import { useDispatch, useSelector } from "react-redux";
 import { setSuggestedUsers } from "../redux/slice/authSlice";
 import FollowUnfollowButton from "./FollowUnFollowBtn";
+import { Link } from "react-router-dom";
 
 const SuggestedUsers = () => {
   const { data: suggestedUsersFetch } = useGetSuggestedUsers();
@@ -45,7 +46,7 @@ const SuggestedUsers = () => {
             key={suggestedUser._id}
             className="flex items-center justify-between"
           >
-            <div className="flex items-center space-x-3">
+            <Link to={`/user-profile/${suggestedUser._id}`} className="flex items-center space-x-3">
               <img
                 src={suggestedUser.profilePic}
                 alt={`${suggestedUser.username} profile`}
@@ -59,7 +60,7 @@ const SuggestedUsers = () => {
                 </div>
                 <p className="text-xs text-gray-400">{suggestedUser.email}</p>
               </div>
-            </div>
+            </Link>
             {suggestedUser._id !== user._id && (
               <FollowUnfollowButton
                 userId={suggestedUser._id}

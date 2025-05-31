@@ -23,7 +23,7 @@ export default function Message() {
   const isUserChat = selectedUser != null;
 
   return (
-    <div className="h-[calc(100vh-2rem)] w-full flex flex-col overflow-hidden bg-neutral-50 dark:bg-neutral-900 rounded-2xl shadow-lg m-2">
+    <div className="h-screen w-full flex flex-col overflow-hidden bg-neutral-50 dark:bg-neutral-900 rounded-2xl shadow-lg m-2">
       <div className="flex-1 flex">
         <div className="w-full h-full flex">
           <div className="flex h-full w-full overflow-hidden">

@@ -1,3 +1,4 @@
+import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import { generateToken } from "../utils/generateToken.js";
 import imageKit from "../utils/imagekit.js";
@@ -185,7 +186,7 @@ export const followOrUnfollow = async (req, res) => {
             ]);
         }
 
-        // Re-fetch updated current user with populated data
+       
         const updatedUser = await User.findById(currentUserId)
             .populate("followers", "username profilePic ")
             .populate("following", "username profilePic ");
@@ -235,3 +236,21 @@ export const getSuggestedUsers = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 }
+
+export const getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Get posts by this user
+    const posts = await Post.find({ userId: id }).select("content imagePic videos likes comments");
+
+    res.status(200).json({ data: { user, posts }, message: "User data fetched successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

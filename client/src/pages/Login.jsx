@@ -60,6 +60,7 @@ export default function Login() {
               <Mail className="w-5 h-5 text-gray-400 mr-2" />
               <input
                 type="email"
+                name="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full focus:outline-none"
